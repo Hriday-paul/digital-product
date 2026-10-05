@@ -38,7 +38,7 @@ const Section3 = () => {
                 <CategoryChip categories={serviceCategories} />
             </motion.div>
 
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-8">
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:mt-12 lg:gap-6">
                 {services.map((course, index) => (
                     <motion.div
                         key={course.slug}

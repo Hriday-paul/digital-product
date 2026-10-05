@@ -56,12 +56,20 @@ function Navbar() {
                         <ul className='lg:flex flex-row gap-x-5 lg:gap-x-8 items-center hidden'>
 
 
-                            {navitems?.map(i => {
-                                return <li key={i?.id} className='font-montserrat text-base text-gray-800 font-medium hover:text-primary duration-200'>
-                                    <Link href={i?.rout}>
-                                        {i?.label}
-                                    </Link>
-                                </li>
+                            {navitems?.map((i) => {
+                                const isActive = pathname === i.rout;
+                                return (
+                                    <li
+                                        key={i?.id}
+                                        className={`font-montserrat text-base duration-200 ${
+                                            isActive
+                                                ? "text-primary font-semibold"
+                                                : "text-gray-800 font-medium hover:text-primary"
+                                        }`}
+                                    >
+                                        <Link href={i?.rout}>{i?.label}</Link>
+                                    </li>
+                                );
                             })}
 
                         </ul>
