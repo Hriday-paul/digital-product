@@ -1,6 +1,4 @@
 "use client"
-import { Link } from '@/i18n/navigation';;
-import { useRouter } from '@/i18n/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ImSpinner2 } from 'react-icons/im';
 import { useRegisterUserMutation } from '@/redux/api/authApi';
@@ -9,7 +7,8 @@ import { toast } from 'react-toastify';
 import { config } from '@/utils/config';
 import { MdErrorOutline } from 'react-icons/md';
 import PasswordInput from './PasswordInput';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 type signUpType = {
     first_name: string,
@@ -25,7 +24,6 @@ type signUpType = {
 const SignUpForm = () => {
     const [postUser, { isLoading }] = useRegisterUserMutation();
     const [_, setCookie] = useCookies(['token', 'accessToken', 'refreshToken']);
-    const t = useTranslations("signup.form");
 
     const {
         register,
@@ -84,39 +82,19 @@ const SignUpForm = () => {
 
                 <form onSubmit={handleSubmit(handleFormSubmit)} className=''>
 
-                    {/* -------------------check box---------------------- */}
-                    <div className="flex gap-10 justify-center my-6">
-                        <div className="inline-flex items-center">
-                            <label className="relative flex items-center cursor-pointer" htmlFor="user">
-                                <input {...register("role", { required: true })} value='User' type="radio" className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-slate-300 checked:border-slate-400 transition-all" id="user" />
-                                <span className="absolute bg-slate-800 w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                </span>
-                            </label>
-                            <label className="ml-2 text-black cursor-pointer text-base font-poppin" htmlFor="user">{t("role.user")}</label>
-                        </div>
-
-                        <div className="inline-flex items-center">
-                            <label className="relative flex items-center cursor-pointer" htmlFor="dealer">
-                                <input {...register("role", { required: true })} value='Vendor' type="radio" className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border border-slate-300 checked:border-slate-400 transition-all" id="dealer" />
-                                <span className="absolute bg-slate-800 w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                                </span>
-                            </label>
-                            <label className="ml-2 text-black cursor-pointer text-base font-poppin" htmlFor="dealer">{t("role.vendor")}</label>
-                        </div>
-                    </div>
 
                     <div className='flex flex-row gap-x-3 mb-4'>
                         {/* -----------------first name-------------- */}
                         <div className="w-full mx-auto">
                             <label htmlFor='firstname' className="mb-1.5 block text-black   font-montserrat">
-                                {t("fields.first_name.label")}
+                                First Name
                                 <span className="text-red-500 text-base ml-1">*</span>
                             </label>
                             <input
                                 type="text"
                                 id='firstname'
-                                {...register("first_name", { required: t("fields.first_name.required"), })}
-                                placeholder={t("fields.first_name.placeholder")}
+                                {...register("first_name", { required: "First name is required", })}
+                                placeholder={"First Name"}
                                 className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.first_name ? 'border-danger' : 'border-stroke '}`}
                             />
                             {errors?.first_name && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.first_name?.message}</p>}
@@ -125,14 +103,14 @@ const SignUpForm = () => {
                         {/* -----------------last name-------------- */}
                         <div className="w-full mx-auto">
                             <label htmlFor='lastname' className="mb-1.5 block text-black   font-montserrat">
-                                {t("fields.last_name.label")}
+                                Last Name
                                 {/* <span className="text-red-500 text-base ml-1">*</span> */}
                             </label>
                             <input
                                 type="text"
                                 id='lastname'
                                 {...register("last_name")}
-                                placeholder={t("fields.last_name.placeholder")}
+                                placeholder={"Last Name"}
                                 className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.last_name ? 'border-danger' : 'border-stroke '}`}
                             />
                             {errors?.last_name && <p className="text-red-500 text-sm col-span-2 font-montserrat">{errors?.last_name?.message}</p>}
@@ -141,7 +119,7 @@ const SignUpForm = () => {
 
                     <div className="my-5">
                         <label htmlFor={"phone"} className={`mb-1.5 font-montserrat block text-black text-lg`}>
-                            {t("fields.phone.label")}
+                            Phone Number
                             <span className="text-red-500 text-base ml-1">*</span>
                         </label>
                         <div className={`w-full flex flex-row items-center border rounded-md ${errors?.phone ? 'border-danger' : 'border-stroke '}`}>
@@ -156,14 +134,14 @@ const SignUpForm = () => {
                         </div>
                         {errors.phone && <div className='flex items-center mb-2'>
                             <MdErrorOutline className='text-sm text-orange-500' />
-                            <p className='text-orange-500 text-sm ml-1'>{t("fields.phone.invalid")}</p>
+                            <p className='text-orange-500 text-sm ml-1'>Phone number is invalid</p>
                         </div>}
                     </div>
 
                     {/* -----------------email-------------- */}
                     <div className="w-full mx-auto mb-4">
                         <label htmlFor='email' className="mb-1.5 block text-black font-montserrat">
-                            {t("fields.email.label")}
+                            Email
                             {/* <span className="text-red-500 text-base ml-1">*</span> */}
                         </label>
                         <input
@@ -172,7 +150,7 @@ const SignUpForm = () => {
                             {...register("email", {
                                 // required: true,
                                 pattern: {
-                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: t("fields.email.invalid")
+                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: "Invalid email address"
                                 }
                             })}
                             placeholder="xyz@gmail.com"
@@ -185,13 +163,13 @@ const SignUpForm = () => {
                     <div className="w-full mx-auto mb-4">
                         <PasswordInput
                             name="password"
-                            label={t("fields.password.label")}
-                            placeholder={t("fields.password.placeholder")}
+                            label="Password"
+                            placeholder="*********"
                             register={register}
                             isLarge={true}
                             errors={errors}
                             validationRules={{
-                                required: t("fields.password.required"),
+                                required: "Password is required",
                                 // pattern: {
                                 //     value: /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
                                 //     message:
@@ -209,17 +187,17 @@ const SignUpForm = () => {
 
                         <PasswordInput
                             name="confirmPassword"
-                            label={t("fields.confirm_password.label")}
-                            placeholder={t("fields.confirm_password.placeholder")}
+                            label="Confirm Password"
+                            placeholder="*********"
                             register={register}
                             isLarge={true}
                             errors={errors}
                             validationRules={{
-                                required: t("fields.confirm_password.required"),
+                                required: "Confirm password is required",
                             }}
                         />
 
-                        {(watch('password') !== watch('confirmPassword')) && <p className='text-xs font-montserrat text-danger mt-0.5'>{t("fields.confirm_password.mismatch")}</p>}
+                        {(watch('password') !== watch('confirmPassword')) && <p className='text-xs font-montserrat text-danger mt-0.5'>Passwords do not match</p>}
 
                     </div>
 
@@ -236,21 +214,18 @@ const SignUpForm = () => {
                                 </span>
                             </label>
                             <label className="ml-1.5 text-zinc-500 font-montserrat text-sm capitalize" htmlFor={"terms"}>
-                                {t("fields.terms.label", {
-                                    terms: t("fields.terms.terms"),
-                                    privacy: t("fields.terms.privacy")
-                                })} <Link href="/terms" className='text-primary'>{t("fields.terms.terms")}</Link> & <Link href="/privacy" className='text-primary'>{t("fields.terms.privacy")}</Link>
+                                I agree to the <Link href="/terms" className='text-primary'>Terms of Service</Link> and <Link href="/privacy" className='text-primary'>Privacy Policy</Link>
                             </label>
                         </div>
                     </div>
 
                     <button type='submit' disabled={isLoading} className='bg-primary py-3 font-montserrat text-secondary rounded-lg w-full mt-5 hover:bg-opacity-90 duration-200 flex flex-row gap-x-2 items-center justify-center disabled:bg-opacity-60 text-white disabled:cursor-not-allowed cursor-pointer'>
                         {isLoading && <ImSpinner2 className="text-lg text-white animate-spin" />}
-                        <span>{isLoading ? t("button.loading") : watch("role") == "Vendor" ? t("button.sign_up") : t("button.sign_up_free")}</span>
+                        <span>{isLoading ? "Loading..." : "Sign Up"}</span>
                     </button>
 
                     <div>
-                        <h5 className='text-gray-900 font-montserrat text-sm md:text-base text-center mt-3'>{t("login_prompt")}<Link className='text-primary' href='/auth/login'> {t("login_now")}</Link></h5>
+                        <h5 className='text-gray-900 font-montserrat text-sm md:text-base text-center mt-3'>Already have an account? <Link className='text-primary' href='/auth/login'> Log in</Link></h5>
                     </div>
 
                 </form>

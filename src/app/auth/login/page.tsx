@@ -1,8 +1,8 @@
 import LoginForm from '@/components/Auth/LoginForm'
-import { Link } from '@/i18n/navigation'
 import Pagetop from '@/shared/Pagetop'
+
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import { IoIosArrowForward } from 'react-icons/io'
 
 export const metadata: Metadata = {
@@ -20,12 +20,11 @@ export const metadata: Metadata = {
 }
 
 async function LoginPage() {
-    const t = await getTranslations("login");
     return (
         <div>
-            <Pagetop title={t("title")}>
+            <Pagetop title="Login">
                 <h3 className="text-xs md:text-sm font-montserrat text-gray-100 flex flex-row gap-x-1.5 justify-center items-center">
-                    <Link href='/' className='text-primary'>{t("bread_cump.home")}</Link> <IoIosArrowForward className='' /> {t("bread_cump.login")}
+                    <Link href='/' className='text-primary'>Home</Link> <IoIosArrowForward className='' /> Login
                 </h3>
             </Pagetop>
 

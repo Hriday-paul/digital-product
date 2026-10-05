@@ -1,12 +1,11 @@
 "use client"
 
-import { useRouter } from '@/i18n/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ImSpinner2 } from 'react-icons/im';
 import { useResetPasswordMutation } from '@/redux/api/authApi';
 import { toast } from 'sonner';
 import PasswordInput from './PasswordInput';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 type resetPasswordType = {
     new_password: string,
@@ -15,7 +14,6 @@ type resetPasswordType = {
 
 const ResetPassword = () => {
     const [postResetPassword, { isLoading }] = useResetPasswordMutation();
-    const t = useTranslations("reset_pass.form");
 
     const {
         register,
@@ -30,7 +28,7 @@ const ResetPassword = () => {
     const handleFormSubmit: SubmitHandler<resetPasswordType> = async (data) => {
 
         if (data?.new_password !== data?.confirm_password) {
-            toast.error(t("toast.mismatch"));
+            toast.error("New password and confirm password do not match");
             return;
         }
 
@@ -40,12 +38,12 @@ const ResetPassword = () => {
                 confirmPassword: data?.confirm_password
             }).unwrap();
 
-            toast.success(res?.message || t("toast.success"));
+            toast.success(res?.message || "Password reset successfully");
             reset();
             router.push('/auth/login');
 
         } catch (err: any) {
-            toast.error(err?.data?.message || t("toast.error"));
+            toast.error(err?.data?.message || "An error occurred while resetting the password");
         }
     }
 
@@ -59,13 +57,13 @@ const ResetPassword = () => {
                     <div className="w-full mx-auto mb-4">
                         <PasswordInput
                             name="new_password"
-                            label={t("fields.new_password.label")}
-                            placeholder={t("fields.new_password.placeholder")}
+                            label="New Password"
+                            placeholder="*********"
                             register={register}
                             isLarge={true}
                             errors={errors}
                             validationRules={{
-                                required: t("fields.new_password.required"),
+                                required: "New password is required",
                             }}
                         />
 
@@ -80,19 +78,19 @@ const ResetPassword = () => {
                     <div className="w-full mx-auto mb-4">
                         <PasswordInput
                             name="confirm_password"
-                            label={t("fields.confirm_password.label")}
-                            placeholder={t("fields.confirm_password.placeholder")}
+                            label="Confirm Password"
+                            placeholder="*********"
                             register={register}
                             isLarge={true}
                             errors={errors}
                             validationRules={{
-                                required: t("fields.confirm_password.required"),
+                                required: "Confirm password is required",
                             }}
                         />
 
                         {(watch('new_password') !== watch('confirm_password')) && (
                             <p className='text-xs font-montserrat text-danger mt-0.5'>
-                                {t("fields.confirm_password.mismatch")}
+                                Confirm password does not match new password
                             </p>
                         )}
                     </div>
@@ -107,7 +105,7 @@ const ResetPassword = () => {
                             <ImSpinner2 className="text-lg text-white animate-spin" />
                         )}
                         <span>
-                            {isLoading ? t("btn.loading") : t("btn.txt")}
+                            {isLoading ? "Loading..." : "Reset Password"}
                         </span>
                     </button>
 

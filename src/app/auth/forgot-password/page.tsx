@@ -1,10 +1,9 @@
 import ForgotPassForm from '@/components/Auth/ForgotPassForm'
 import Pagetop from '@/shared/Pagetop'
-import { getTranslations } from 'next-intl/server';
-import {Link} from '@/i18n/navigation'
 
 import { IoIosArrowForward } from 'react-icons/io'
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: "Forgot Password",
@@ -21,12 +20,11 @@ export const metadata: Metadata = {
 }
 
 async function Forgot() {
-     const t = await getTranslations("forgot_pass");
     return (
         <div>
-            <Pagetop title={t("title")}>
+            <Pagetop title="Forgot Password">
                 <h3 className="text-xs md:text-sm font-montserrat text-gray-100 flex flex-row gap-x-1.5 justify-center items-center">
-                    <Link href='/' className='text-primary'>{t("bread_cump.home")}</Link> <IoIosArrowForward className='' /> {t("bread_cump.forgot")}
+                    <Link href='/' className='text-primary'>Home</Link> <IoIosArrowForward className='' /> Forgot Password
                 </h3>
             </Pagetop>
 

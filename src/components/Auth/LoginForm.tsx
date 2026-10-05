@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ImSpinner2 } from "react-icons/im";
 import { MdErrorOutline } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "@/i18n/navigation";
 import PasswordInput from "./PasswordInput";
 import { useLoginUserMutation } from "@/redux/api/authApi";
 import { useCookies } from "react-cookie";
@@ -12,8 +11,7 @@ import { config } from "@/utils/config";
 import { addUserDetails } from "@/redux/slices/userSlice";
 import { toast } from "react-toastify";
 import baseApi from "@/redux/api/baseApi";
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type FormType = {
     phone: string,
@@ -26,7 +24,6 @@ const LoginForm = () => {
     const [_, setCookie] = useCookies(['accessToken', 'refreshToken']);
     const dispatch = useDispatch();
     const router = useRouter();
-    const t = useTranslations("login.form");
     const nextRout = useSearchParams().get('next');
 
     const { register, handleSubmit, reset, formState: { errors }, watch } = useForm<FormType>({
@@ -77,7 +74,7 @@ const LoginForm = () => {
                 {/* Phone */}
                 <div className="my-5">
                     <label htmlFor={"phone"} className="mb-1.5 font-montserrat block text-black text-lg">
-                        {t("phone")}
+                        Phone
                         <span className="text-red-500 text-base ml-1">*</span>
                     </label>
                     <div className={`w-full flex flex-row items-center border rounded-md ${errors?.phone ? 'border-danger' : 'border-stroke'}`}>
@@ -86,11 +83,11 @@ const LoginForm = () => {
                             type="number"
                             id='phone'
                             {...register("phone", { 
-                                required: t("phone_required"), 
-                                pattern: { value: /^01\d{9}$/, message: t("phone_invalid") }, 
-                                minLength: { value: 11, message: t("phone_invalid") }
+                                required: "Phone number is required", 
+                                pattern: { value: /^01\d{9}$/, message: "Invalid phone number" }, 
+                                minLength: { value: 11, message: "Phone number must be 11 digits" }
                             })}
-                            placeholder={t("phone_placeholder")}
+                            placeholder={"Enter your phone number"}
                             className="w-full px-2 bg-white py-2.5 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat rounded-r-md"
                         />
                     </div>
@@ -104,28 +101,28 @@ const LoginForm = () => {
                 <div className="w-full mx-auto mb-4">
                     <PasswordInput
                         name="password"
-                        label={t("password")}
-                        placeholder={t("password_placeholder")}
+                        label={"Password"}
+                        placeholder={"Enter your password"}
                         register={register}
                         isLarge={true}
                         errors={errors}
-                        validationRules={{ required: t("password_required") }}
+                        validationRules={{ required: "Password is required" }}
                     />
                 </div>
 
-                <Link href={'/auth/forgot-password'} className='underline underline-offset-2 font-medium font-montserrat'>{t("forgot")}</Link>
+                <Link href={'/auth/forgot-password'} className='underline underline-offset-2 font-medium font-montserrat'>{"Forgot Password"}</Link>
 
                 {/* Submit */}
                 <button type='submit' disabled={isLoading} className='bg-primary py-3 font-montserrat rounded-lg w-full mt-5 hover:bg-opacity-90 duration-200 flex flex-row gap-x-2 items-center justify-center disabled:bg-opacity-60 text-white disabled:cursor-not-allowed cursor-pointer'>
                     {isLoading && <ImSpinner2 className="text-lg text-white animate-spin" />}
-                    <span>{isLoading ? t("btns.loading") : t("btns.signin")}</span>
+                    <span>{isLoading ? "Loading..." : "Sign In"}</span>
                 </button>
 
                 {/* Register Link */}
                 <div>
                     <h5 className='text-gray-900 font-montserrat text-sm md:text-base text-center mt-3'>
-                        {t("dont_have_account")} 
-                        <Link className='text-primary' href='/auth/signup'> {t("register")}</Link>
+                        {"Don't have an account?"} 
+                        <Link className='text-primary' href='/auth/signup'> {"Register"}</Link>
                     </h5>
                 </div>
             </form>

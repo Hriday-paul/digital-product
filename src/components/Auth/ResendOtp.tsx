@@ -2,13 +2,12 @@
 import { ImSpinner2 } from "react-icons/im";
 import { MdErrorOutline } from "react-icons/md";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "@/i18n/navigation";
 import { useResendOtpMutation } from "@/redux/api/authApi";
 import { useCookies } from "react-cookie";
 import { config } from "@/utils/config";
 import { toast } from "sonner";
-import { useTranslations } from "next-intl";
 import SignUpForm from "./SignUpForm";
+import { useRouter } from "next/navigation";
 
 type FormType = {
     phone: string,
@@ -19,7 +18,6 @@ const ResendOtp = () => {
     const [postResend, { isLoading }] = useResendOtpMutation();
     const [_, setCookie] = useCookies(['token']);
     const router = useRouter();
-    const t = useTranslations("resend_otp.form");
 
     const {
         register,
@@ -39,14 +37,14 @@ const ResendOtp = () => {
                 secure: config.hasSSL,
             });
 
-            toast.success(t("toast.success"));SignUpForm
+            toast.success("OTP resent successfully");
             reset();
 
             router.push("/auth/verify-otp");
             router.refresh();
 
         } catch (err: any) {
-            toast.error(err?.data?.message || t("toast.error"));
+            toast.error(err?.data?.message || "Something went wrong, try again");
         }
     }
 
@@ -58,7 +56,7 @@ const ResendOtp = () => {
                 {/* Phone Field */}
                 <div className="my-5">
                     <label htmlFor="phone" className="mb-1.5 font-montserrat block text-black text-lg">
-                        {t("phone.label")}
+                        Phone
                         <span className="text-red-500 text-base ml-1">*</span>
                     </label>
 
@@ -72,14 +70,14 @@ const ResendOtp = () => {
                                 required: true,
                                 pattern: {
                                     value: /^01\d{9}$/,
-                                    message: t("phone.invalid")
+                                    message: "Invalid phone number"
                                 },
                                 minLength: {
                                     value: 11,
-                                    message: t("phone.invalid")
+                                    message: "Phone number must be 11 digits"
                                 }
                             })}
-                            placeholder={t("phone.placeholder")}
+                            placeholder={"Enter your phone number"}
                             className="w-full px-2 bg-white py-2.5 text-black outline-none transition font-montserrat rounded-r-md"
                         />
                     </div>
@@ -104,7 +102,7 @@ const ResendOtp = () => {
                         <ImSpinner2 className="text-lg text-white animate-spin" />
                     )}
                     <span>
-                        {isLoading ? t("btn.loading") : t("btn.txt")}
+                        {isLoading ? "Loading..." : "Resend OTP"}
                     </span>
                 </button>
             </form>

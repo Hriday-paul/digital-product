@@ -1,8 +1,7 @@
 import ResetPassword from '@/components/Auth/ResetPassword'
-import { Link } from '@/i18n/navigation'
 import Pagetop from '@/shared/Pagetop'
 import { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import { IoIosArrowForward } from 'react-icons/io'
 
 export const metadata: Metadata = {
@@ -20,12 +19,11 @@ export const metadata: Metadata = {
 }
 
 async function Resetpass() {
-    const t = await getTranslations("reset_pass")
     return (
         <div>
-            <Pagetop title={t("title")}>
+            <Pagetop title="Reset Password">
                 <h3 className="text-xs md:text-sm font-montserrat text-gray-100 flex flex-row gap-x-1.5 justify-center items-center">
-                    <Link href='/' className='text-primary'>{t("bread_cump.home")}</Link> <IoIosArrowForward className='' /> <Link href='/auth/forgot-password' className='text-primary'>{t("bread_cump.forgot")}</Link> <IoIosArrowForward className='' /> {t("bread_cump.reset")}
+                    <Link href='/' className='text-primary'>Home</Link> <IoIosArrowForward className='' /> <Link href='/auth/forgot-password' className='text-primary'>Forgot Password</Link> <IoIosArrowForward className='' /> Reset Password
                 </h3>
             </Pagetop>
 
