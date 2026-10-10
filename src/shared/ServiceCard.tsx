@@ -1,18 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-
 import { cn } from "@/lib/utils";
-import { Service } from "@/components/Home/Section3/services";
+import { IService } from "@/redux/types";
 
-type ServiceCardProps = {
-  service: Service;
-  className?: string;
-};
+const ServiceCard = ({ service, className }: { service: IService; className?: string }) => {
+  const { slug, title, variants, images } = service;
 
-const ServiceCard = ({ service, className }: ServiceCardProps) => {
-  const { slug, title, image, price, priceRange } = service;
+  const minVariantPrice = variants?.sort((a, b) => a.final_price - b.final_price)[0]?.final_price;
 
-  const displayPrice = priceRange ?? `$${Number(price).toFixed(2)}`;
+  const displayPrice = minVariantPrice ? `৳${minVariantPrice.toFixed(2)}` : "৳0";
+  
+  const image = images?.[0]?.url || "/placeholder.jpg";
 
   return (
     <div
