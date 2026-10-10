@@ -3,9 +3,9 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ImSpinner2 } from 'react-icons/im';
 import { useResetPasswordMutation } from '@/redux/api/authApi';
-import { toast } from 'sonner';
 import PasswordInput from './PasswordInput';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 type resetPasswordType = {
     new_password: string,

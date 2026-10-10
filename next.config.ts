@@ -4,14 +4,15 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**', // allow all hosts over https
       },
       {
-        protocol: 'http',
-        hostname: '**', // allow all hosts over http
+        protocol: "http",
+        hostname: '**',
       },
     ],
   },

@@ -11,8 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 type signUpType = {
-    first_name: string,
-    last_name: string,
+    name: string,
     email: string,
     password: string,
     confirmPassword: string,
@@ -45,8 +44,7 @@ const SignUpForm = () => {
             if (data?.password !== data?.confirmPassword) return;
 
             const newData = {
-                first_name: data?.first_name,
-                last_name: data?.last_name,
+                name: data?.name,
                 email: data?.email,
                 password: data?.password,
                 role: data?.role,
@@ -83,7 +81,7 @@ const SignUpForm = () => {
                 <form onSubmit={handleSubmit(handleFormSubmit)} className=''>
 
 
-                    <div className='flex flex-row gap-x-3 mb-4'>
+                    <div className='mb-4'>
                         {/* -----------------first name-------------- */}
                         <div className="w-full mx-auto">
                             <label htmlFor='firstname' className="mb-1.5 block text-black   font-montserrat">
@@ -93,28 +91,34 @@ const SignUpForm = () => {
                             <input
                                 type="text"
                                 id='firstname'
-                                {...register("first_name", { required: "First name is required", })}
+                                {...register("name", { required: "First name is required", })}
                                 placeholder={"First Name"}
-                                className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.first_name ? 'border-danger' : 'border-stroke '}`}
+                                className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.name ? 'border-danger' : 'border-stroke '}`}
                             />
-                            {errors?.first_name && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.first_name?.message}</p>}
+                            {errors?.name && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.name?.message}</p>}
                         </div>
 
-                        {/* -----------------last name-------------- */}
-                        <div className="w-full mx-auto">
-                            <label htmlFor='lastname' className="mb-1.5 block text-black   font-montserrat">
-                                Last Name
-                                {/* <span className="text-red-500 text-base ml-1">*</span> */}
-                            </label>
-                            <input
-                                type="text"
-                                id='lastname'
-                                {...register("last_name")}
-                                placeholder={"Last Name"}
-                                className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.last_name ? 'border-danger' : 'border-stroke '}`}
-                            />
-                            {errors?.last_name && <p className="text-red-500 text-sm col-span-2 font-montserrat">{errors?.last_name?.message}</p>}
-                        </div>
+                    </div>
+
+                    {/* -----------------email-------------- */}
+                    <div className="w-full mx-auto mb-4">
+                        <label htmlFor='email' className="mb-1.5 block text-black font-montserrat">
+                            Email
+                            <span className="text-red-500 text-base ml-1">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            id='email'
+                            {...register("email", {
+                                required: true,
+                                pattern: {
+                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: "Invalid email address"
+                                }
+                            })}
+                            placeholder="xyz@gmail.com"
+                            className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.email ? 'border-danger' : ' border-stroke '}`}
+                        />
+                        {errors?.email && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.email?.message}</p>}
                     </div>
 
                     <div className="my-5">
@@ -136,27 +140,6 @@ const SignUpForm = () => {
                             <MdErrorOutline className='text-sm text-orange-500' />
                             <p className='text-orange-500 text-sm ml-1'>Phone number is invalid</p>
                         </div>}
-                    </div>
-
-                    {/* -----------------email-------------- */}
-                    <div className="w-full mx-auto mb-4">
-                        <label htmlFor='email' className="mb-1.5 block text-black font-montserrat">
-                            Email
-                            {/* <span className="text-red-500 text-base ml-1">*</span> */}
-                        </label>
-                        <input
-                            type="email"
-                            id='email'
-                            {...register("email", {
-                                // required: true,
-                                pattern: {
-                                    value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: "Invalid email address"
-                                }
-                            })}
-                            placeholder="xyz@gmail.com"
-                            className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.email ? 'border-danger' : ' border-stroke '}`}
-                        />
-                        {errors?.email && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.email?.message}</p>}
                     </div>
 
                     {/* -----------------Password Input-------------- */}

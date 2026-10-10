@@ -5,7 +5,7 @@ const AuthApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         registerUser: builder.mutation<{ message: string, data: { otpToken: { token: string }, paymentLink: string } }, any>({
             query: (body) => ({
-                url: '/auth/create',
+                url: '/auth/signup',
                 method: 'POST',
                 body: body
             }),
@@ -19,7 +19,7 @@ const AuthApi = baseApi.injectEndpoints({
             })
         }),
 
-        resendOtp: builder.mutation<{ message: string, data: { token: string } }, { phone: string }>({
+        resendOtp: builder.mutation<{ message: string, data: { token: string } }, { email: string }>({
             query: (body) => ({
                 url: '/auth/resend-otp',
                 method: 'POST',
@@ -27,7 +27,7 @@ const AuthApi = baseApi.injectEndpoints({
             })
         }),
 
-        loginUser: builder.mutation<{ message: string, data: { accessToken: string, refreshToken: string, user: IUser } }, { phone: string, password: string, role : string }>({
+        loginUser: builder.mutation<{ message: string, data: { accessToken: string, refreshToken: string, user: IUser } }, { email: string, password: string }>({
             query: (data) => ({
                 url: '/auth/login',
                 method: 'POST',
@@ -36,11 +36,11 @@ const AuthApi = baseApi.injectEndpoints({
             invalidatesTags: ['user']
         }),
 
-        forgotPassword: builder.mutation<{ message: string, data: { token: string } }, { phone: string }>({
-            query: ({ phone }) => ({
+        forgotPassword: builder.mutation<{ message: string, data: { token: string } }, { email: string }>({
+            query: ({ email }) => ({
                 url: '/auth/forgot-password',
                 method: 'POST',
-                body: { phone },
+                body: { email },
             }),
         }),
 

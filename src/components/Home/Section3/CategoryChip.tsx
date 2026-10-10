@@ -1,47 +1,49 @@
 "use client";
-
-import { useState } from "react";
-
+import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { ICategory } from "@/redux/types";
+import { useRouter } from "next/navigation";
 
 type CategoryChipsProps = {
-    categories: string[];
-    defaultCategory?: string;
+  categories: ICategory[];
+  defaultCategory?: string;
+  onSelectCategory?: (category: string) => void;
 };
 
 const CategoryChip = ({
-    categories,
-    defaultCategory = categories[0],
+  categories,
 }: CategoryChipsProps) => {
-    const [active, setActive] = useState(defaultCategory);
 
-    return (
-        <div className="mx-auto flex max-w-275 flex-wrap items-center justify-center gap-2 sm:gap-3">
-            {categories.map((category) => (
-                <button
-                    key={category}
-                    type="button"
-                    aria-pressed={active === category}
-                    onClick={() => setActive(category)}
-                    className={cn(
-                        "rounded-full px-4 py-2 text-sm transition-colors sm:px-3.5 sm:py-2 font-montserrat font-medium",
-                        active === category
-                            ? "bg-primary font-medium text-white"
-                            : "bg-gray-50 text-primary-text hover:bg-gray-200 hover:text-black",
-                    )}
-                >
-                    {category}
-                </button>
-            ))}
-            <button
-                type="button"
-                className="px-2 py-2 text-sm font-medium text-brand hover:underline sm:text-base"
-            >
-                + More
-            </button>
-        </div>
-    );
+  const cats = categories?.slice(0, 5) || [];
+
+  const router = useRouter();
+
+  const handleClick = (category: string) => {
+    router.push(`/shop?category=${category}`);
+  };
+
+  return (
+    <div className="mx-auto flex max-w-275 flex-wrap items-center justify-center gap-2 sm:gap-3">
+      {cats.map((category) => (
+        <button
+          key={category?.id}
+          type="button"
+          onClick={() => handleClick(category?.name || "")}
+          className={cn(
+            "rounded-full px-4 py-2 text-sm transition-all sm:px-3.5 sm:py-2 font-montserrat font-medium cursor-pointer", "bg-gray-100 text-neutral-700 hover:bg-gray-200 hover:text-black dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+          )}
+        >
+          {category?.name}
+        </button>
+      ))}
+      <Link
+        href="/shop"
+        className="px-3 py-2 text-sm font-semibold text-primary hover:underline sm:text-base font-montserrat inline-flex items-center transition-colors"
+      >
+        + More
+      </Link>
+    </div>
+  );
 };
 
-
-export default CategoryChip
+export default CategoryChip;

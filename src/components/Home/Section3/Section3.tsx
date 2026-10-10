@@ -6,10 +6,10 @@ import { ArrowRight } from "lucide-react";
 
 import CategoryChip from "./CategoryChip";
 import ServiceCard from "@/shared/ServiceCard";
-import { serviceCategories, services } from "./services";
 import { Button } from "@/components/ui/button";
+import { ICategory, IService } from "@/redux/types";
 
-const Section3 = () => {
+const Section3 = ({ initialServices : services, initialCategories : serviceCategories }: { initialServices: IService[], initialCategories: ICategory[] }) => {
     return (
         <section className="py-6 md:py-12 container">
 

@@ -75,10 +75,10 @@ export default function Footer() {
                   Call Us
                 </span>
                 <a
-                  href="tel:+8801336832636"
+                  href="tel:+8801727877160"
                   className="text-base sm:text-lg font-semibold text-white hover:text-primary transition-colors font-montserrat"
                 >
-                  01336-832636
+                  01727-877160
                 </a>
               </div>
             </div>
@@ -92,10 +92,10 @@ export default function Footer() {
                   WhatsApp
                 </span>
                 <a
-                  href="https://wa.me/8801336832636"
+                  href="https://wa.me/8801727877160"
                   className="text-base sm:text-lg font-semibold text-white hover:text-primary transition-colors font-montserrat"
                 >
-                  01336-832636
+                  01727-877160
                 </a>
               </div>
             </div>

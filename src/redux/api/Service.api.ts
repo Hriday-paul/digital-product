@@ -1,4 +1,4 @@
-import { IMeta, IService, IUser } from "../types";
+import { ICategory, IMeta, IService } from "../types";
 import baseApi from "./baseApi";
 
 const ServcieApi = baseApi.injectEndpoints({
@@ -8,10 +8,18 @@ const ServcieApi = baseApi.injectEndpoints({
                 url: '/services',
                 params: query
             }),
-            // invalidatesTags: []
         }),
-
+        categories: builder.query<{ message: string, data: ICategory[] }, void>({
+            query: () => ({
+                url: '/categories'
+            }),
+        }),
+        serviceBySlug: builder.query<{ message: string, data: IService }, string>({
+            query: (slug) => ({
+                url: `/services/${slug}`
+            }),
+        }),
     })
 })
 
-export const { useLazyServicesQuery } = ServcieApi;
+export const { useLazyServicesQuery, useServicesQuery, useCategoriesQuery, useServiceBySlugQuery } = ServcieApi;

@@ -6,13 +6,13 @@ const cookies = new Cookies();
 
 
 export interface userType {
-    user: { firstName: string | null, profilePicture: string | null, role: "User" | "Vendor" }
+    user: { firstName: string | null, profilePicture: string | null }
 }
 
-type addUserType = { firstName: string, profilePicture: string, role: "User" | "Vendor" }
+type addUserType = { firstName: string, profilePicture: string }
 
 const initialState: userType = {
-    user: { firstName: null, profilePicture: null, role: "User" }
+    user: { firstName: null, profilePicture: null }
 }
 
 
@@ -23,7 +23,6 @@ const userSlice = createSlice({
         addUserDetails: (state, { payload }: PayloadAction<addUserType>) => {
             state.user.firstName = payload?.firstName;
             state.user.profilePicture = payload?.profilePicture;
-            state.user.role = payload?.role
         },
 
         removeUser: (state) => {

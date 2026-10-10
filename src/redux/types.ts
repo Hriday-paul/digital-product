@@ -28,6 +28,20 @@ export interface IMeta {
 
 export type OrderStatus = "PENDING" | "COMPLETED" | "CANCELLED" | string;
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | string;
+export type PaymentMethodType = "BKASH" | "NAGAD" | "ROCKET";
+
+export interface PlaceOrderPayload {
+    serviceId: string;
+    variantId: string;
+    customerName: string;
+    customerEmail: string;
+    customerWhatsapp: string;
+    customerNote?: string;
+    paymentMethod: PaymentMethodType;
+    accountNumber: string;
+    transactionId: string;
+    amount?: number;
+}
 
 export interface IOrderPayment {
     id: string | number;

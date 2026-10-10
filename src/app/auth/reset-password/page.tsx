@@ -22,8 +22,8 @@ async function Resetpass() {
     return (
         <div>
             <Pagetop title="Reset Password">
-                <h3 className="text-xs md:text-sm font-montserrat text-gray-100 flex flex-row gap-x-1.5 justify-center items-center">
-                    <Link href='/' className='text-primary'>Home</Link> <IoIosArrowForward className='' /> <Link href='/auth/forgot-password' className='text-primary'>Forgot Password</Link> <IoIosArrowForward className='' /> Reset Password
+                <h3 className="text-xs md:text-sm font-montserrat text-gray-100 flex flex-row gap-x-1.5 items-center">
+                    <Link href='/' >Home</Link> <IoIosArrowForward className='' /> <Link href='/auth/forgot-password'>Forgot Password</Link> <IoIosArrowForward className='' /> Reset Password
                 </h3>
             </Pagetop>
 

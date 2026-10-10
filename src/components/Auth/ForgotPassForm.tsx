@@ -5,11 +5,11 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useForgotPasswordMutation } from "@/redux/api/authApi";
 import { useCookies } from "react-cookie";
 import { config } from "@/utils/config";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 type FormType = {
-    phone: string,
+    email: string,
 }
 
 const ForgotPassForm = () => {
@@ -53,25 +53,24 @@ const ForgotPassForm = () => {
 
             <form onSubmit={handleSubmit(handleFormSubmit)} className="px-5 md:px-7 lg:px-10 mt-5 md:mt-8 lg:mt-10">
 
-                <div className="my-5">
-                    <label htmlFor={"phone"} className={`mb-1.5 font-montserrat block text-black text-lg`}>
-                        Phone
+                <div className="w-full mx-auto mb-4">
+                    <label htmlFor='email' className="mb-1.5 block text-black font-montserrat">
+                        Email
                         <span className="text-red-500 text-base ml-1">*</span>
                     </label>
-                    <div className={`w-full flex flex-row items-center border rounded-md ${errors?.phone ? 'border-danger' : 'border-stroke '}`}>
-                        <span className="border-r border-gray-300 px-2 font-montserrat">+88</span>
-                        <input
-                            type="number"
-                            id='phone'
-                            {...register("phone", { pattern: /^01\d{9}$/, minLength: 11, required: "Phone number is required" })}
-                            placeholder="01****"
-                            className={`w-full px-2 bg-white py-2.5 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat rounded-r-md`}
-                        />
-                    </div>
-                    {errors.phone && <div className='flex items-center mb-2'>
-                        <MdErrorOutline className='text-sm text-orange-500' />
-                        <p className='text-orange-500 text-sm ml-1'>Phone number is required</p>
-                    </div>}
+                    <input
+                        type="email"
+                        id='email'
+                        {...register("email", {
+                            required: true,
+                            pattern: {
+                                value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message: "Invalid email address"
+                            }
+                        })}
+                        placeholder="xyz@gmail.com"
+                        className={`w-full rounded-md border bg-white  py-2.5 px-4 text-black outline-none transition disabled:cursor-default disabled:bg-whiter font-montserrat placeholder:font-montserrat ${errors?.email ? 'border-danger' : ' border-stroke '}`}
+                    />
+                    {errors?.email && <p className="text-orange-500 text-sm col-span-2 font-montserrat">{errors?.email?.message}</p>}
                 </div>
 
                 <button type='submit' disabled={isLoading} className='bg-primary py-3 font-montserrat rounded-lg w-full mt-5 hover:bg-opacity-90 duration-200 flex flex-row gap-x-2 items-center justify-center disabled:bg-opacity-60 text-white disabled:cursor-not-allowed cursor-pointer'>

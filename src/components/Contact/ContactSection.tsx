@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+
 import { Loader2, Mail, Phone } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 interface ContactFormData {
   name: string;
@@ -69,10 +70,10 @@ export default function ContactSection() {
                     Call Us
                   </span>
                   <a
-                    href="tel:+8801336832636"
+                    href="tel:+8801727877160"
                     className="text-base sm:text-lg font-semibold text-primary transition-colors font-montserrat"
                   >
-                    01336-832636
+                    01727877160
                   </a>
                 </div>
               </div>
@@ -86,10 +87,10 @@ export default function ContactSection() {
                     WhatsApp
                   </span>
                   <a
-                    href="https://wa.me/8801336832636"
+                    href="https://wa.me/8801727877160"
                     className="text-base sm:text-lg font-semibold text-primary transition-colors font-montserrat"
                   >
-                    01336-832636
+                    01727-877160
                   </a>
                 </div>
               </div>
