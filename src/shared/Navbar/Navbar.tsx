@@ -35,7 +35,7 @@ function Navbar() {
     return (
         <div className='bg-[#00040C] shadow-md sticky top-0 z-50 left-0 border-b border-white/10'>
             <div className='container'>
-                <div className='flex flex-row justify-between items-center gap-x-4 py-2.5 sm:py-3'>
+                <div className='flex flex-row justify-between items-center gap-x-4 py-2.5'>
                     <Link href={"/"}>
                         <div className="flex flex-row gap-x-1 items-center">
                             <Image
