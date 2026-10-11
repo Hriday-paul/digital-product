@@ -6,13 +6,12 @@ import { IoIosArrowForward } from 'react-icons/io'
 
 export const metadata: Metadata = {
     title: "Signup",
-    description: "Runbd signup Page",
-    metadataBase: new URL('https://runbd.org'),
+    description: "Account signup Page",
+    metadataBase: new URL('https://asifzonebd.com'),
     alternates: {
         canonical: '/auth/signup',
         languages: {
             en: `/auth/signup`,
-            bn: `/bn/auth/signup`,
             'x-default': `/auth/signup`
         }
     },

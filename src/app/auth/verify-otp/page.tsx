@@ -6,13 +6,12 @@ import { IoIosArrowForward } from 'react-icons/io'
 
 export const metadata: Metadata = {
     title: "Verify Otp",
-    description: "Runbd Verify Otp Page",
-    metadataBase: new URL('https://runbd.org'),
+    description: "Account Verify Otp Page",
+    metadataBase: new URL('https://asifzonebd.com'),
     alternates: {
         canonical: '/auth/verify-otp',
         languages: {
             en: `/auth/verify-otp`,
-            bn: `/bn/auth/verify-otp`,
             'x-default': `/auth/verify-otp`
         }
     },

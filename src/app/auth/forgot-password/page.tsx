@@ -7,13 +7,12 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
     title: "Forgot Password",
-    description: "Runbd forgot password Page",
-    metadataBase: new URL('https://runbd.org'),
+    description: "Account forgot password Page",
+    metadataBase: new URL('https://asifzonebd.com'),
     alternates: {
         canonical: '/auth/forgot-password',
         languages: {
             en: `/auth/forgot-password`,
-            bn: `/bn/auth/forgot-password`,
             'x-default': `/auth/forgot-password`
         }
     },

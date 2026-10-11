@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/user/', '/vendor/', "/profile/"],
+      disallow: ['/account/'],
     },
-    sitemap: 'https://runbd.com/sitemap.xml',
+    sitemap: 'https://asifzonebd.com/sitemap.xml',
   }
 }

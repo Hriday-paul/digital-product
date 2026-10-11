@@ -17,39 +17,38 @@ const montserrat = Montserrat({
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Runbd',
-    default: 'Runbd',
+    template: '%s | Asifzonebd',
+    default: 'Asifzonebd',
   },
-  description: "Runbd providing best Car Buy/Sell, Bike Buy/Sell, Car Rent, Workshops, Accessories, Exchange, Lawyer, Job & Services — All in One Click. Skip the hassle and delays — easily buy, sell, or access essential services anytime from one reliable and secure platform.",
+  description: "Asifzonebd providing the best digital services in Bangladesh. We offer a wide range of premium services.",
 
-  keywords: ["runbd", "Runbd", "run bd", "রান বিডি", "রানবিডি", "রান", "car", "buy", "sell", "rent", "car rent", "car sell", "car buy", "bike buy", "bike sell", "bike", "bikes", "job", "jobs", "exchange", "workshop", "accessories", "exchange", "lawyer", "bangladesh cars", "used car", "used bike", "new car", "new bike", "bangladesh bike", "bangladesh workshop", "bangladesh lawyer", "গাড়ি", "নতুন গাড়ি", "পুরাতন গাডি", "গাড়ি বিক্রয়", "গাড়ি বিক্রি", "গাড়ি ক্রয়", "গাড়ি ভাড়া", "বাইক বিক্রয়", "বাইক বিক্রি", "বাইক ক্রয়", "মটরসাইকেল", "মটরসাইকেল বিক্রি", "মটরসাইকেল ক্রয়", "চাকরি", "ওয়ার্কশপ", "গাড়ির সরঞ্জাম", "উকিল", "বাইসাইকেল", "এক্সচেঞ্জ", "car buy sell", "bike buy sell", "car rent"],
+  keywords: ["Asifzonebd", "Asifzonebd.com", "Asifzonebd.net", "Asifzonebd.org", "Asifzonebd.co", "Asifzonebd.info", "Asifzonebd.biz", "Asifzonebd.online", "Asifzonebd.store", "Asifzonebd.tech", "Asifzonebd.site", "Asifzonebd.app", "Asifzonebd.dev", "Asifzonebd.io", "Asifzonebd.ai", "digital services", "subscription services", "premium services", "Bangladesh", "ai premium services"],
 
-  metadataBase: new URL('https://runbd.org'),
+  metadataBase: new URL('https://asifzonebd.com'),
 
   alternates: {
     canonical: '/',
     languages: {
       en: '/',
-      bn: '/bn',
       'x-default': '/'
     }
   },
 
   openGraph: {
-    title: 'Runbd - Buy/Sell & Services in Bangladesh',
-    description: 'Skip the hassle and delays — easily buy, sell, or access essential services anytime from one reliable and secure platform - Runbd.',
-    url: 'https://runbd.org',
-    siteName: 'Runbd',
-    images: ["https://runbd.org/og-image.png"],
+    title: 'Asifzonebd - Digital Services in Bangladesh',
+    description: 'Asifzonebd providing the best digital services in Bangladesh. We offer a wide range of premium services.',
+    url: 'https://asifzonebd.com',
+    siteName: 'Asifzonebd',
+    images: ["https://asifzonebd.com/og-image.png"],
     locale: 'bn_BD',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Runbd - Buy/Sell & Services in Bangladesh',
-    description: 'Skip the hassle and delays — easily buy, sell, or access essential services anytime from one reliable and secure platform - Runbd.',
-    creator: '@runbd',
-    images: ['https://runbd.org/og-image.png'],
+    title: 'Asifzonebd - Digital Services in Bangladesh',
+    description: 'Asifzonebd providing the best digital services in Bangladesh. We offer a wide range of premium services.',
+    creator: '@asifzonebd',
+    images: ['https://asifzonebd.com/og-image.png'],
   },
   robots: {
     index: true,

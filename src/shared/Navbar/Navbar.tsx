@@ -1,12 +1,10 @@
 "use client"
-// import { Link } from '@/i18n/navigation';
-import { FaFacebookF, FaInstagram, FaRegUser, FaTwitter } from "react-icons/fa"
+import { FaRegUser } from "react-icons/fa"
 import SmNavSheet from "./SmNavsheet"
 import logo from "@/assets/logo1.webp"
 import Image from 'next/image'
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-
 
 export const navitems = [
     {
@@ -30,72 +28,67 @@ function Navbar() {
     const router = useRouter();
     const pathname = usePathname();
 
-    const handlePostAdd = () => {
-        router.push(`/vendor/post-ad`);
-    }
     const handleMoveProfile = () => {
         router.push(`/account`);
     }
 
     return (
+        <div className='bg-[#00040C] shadow-md sticky top-0 z-50 left-0 border-b border-white/10'>
+            <div className='container'>
+                <div className='flex flex-row justify-between items-center gap-x-4 py-2.5 sm:py-3'>
+                    <Link href={"/"}>
+                        <div className="flex flex-row gap-x-1 items-center">
+                            <Image
+                                src={logo}
+                                alt='logo'
+                                className='h-11 sm:h-14 md:h-16 xl:h-18 w-auto object-cover'
+                                priority
+                            />
+                        </div>
+                    </Link>
 
-        <>
-
-            <div className='bg-[#00040C] shadow-md sticky top-0 z-50 left-0'>
-                <div className='container'>
-                    <div className=' flex flex-row justify-between items-center gap-x-5'>
-                        <Link href={"/"}>
-                            <div className="flex flex-row gap-x-1 items-center">
-                                <Image src={logo} alt='logo' className='h-12 md:h-16 xl:h-20 w-auto object-cover' />
-                                
-                            </div>
-                        </Link>
-
-                        <ul className='lg:flex flex-row gap-x-5 lg:gap-x-8 items-center hidden'>
-
-
+                    {/* Desktop Navigation List */}
+                    <nav className='hidden lg:flex items-center'>
+                        <ul className='flex flex-row items-center gap-1.5 p-1 rounded-full bg-white/[0.06] border border-white/10 backdrop-blur-md shadow-inner'>
                             {navitems?.map((i) => {
-                                const isActive = pathname === i.rout;
+                                const isActive =
+                                    i.rout === "/"
+                                        ? pathname === "/"
+                                        : pathname === i.rout || pathname.startsWith(i.rout + "/");
                                 return (
-                                    <li
-                                        key={i?.id}
-                                        className={`font-montserrat text-base duration-200 ${
-                                            isActive
-                                                ? "text-primary font-semibold"
-                                                : "text-gray-100 font-medium hover:text-primary"
-                                        }`}
-                                    >
-                                        <Link href={i?.rout}>{i?.label}</Link>
+                                    <li key={i?.id}>
+                                        <Link
+                                            href={i?.rout}
+                                            className={`px-5 py-2 rounded-full font-montserrat text-sm transition-all duration-200 inline-block ${
+                                                isActive
+                                                    ? "bg-primary text-white font-semibold shadow-sm shadow-primary/30"
+                                                    : "text-zinc-300 font-medium hover:text-white hover:bg-white/10"
+                                            }`}
+                                        >
+                                            {i?.label}
+                                        </Link>
                                     </li>
                                 );
                             })}
-
                         </ul>
+                    </nav>
 
-                        <div className="flex flex-row gap-x-2.5 md:gap-x-4 lg:gap-x-5 items-center">
+                    <div className="flex flex-row gap-x-2.5 sm:gap-x-3 items-center">
+                        <button
+                            onClick={handleMoveProfile}
+                            aria-label="User Account"
+                            className='cursor-pointer size-10 flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 border border-white/15 rounded-full transition-all text-white'
+                        >
+                            <FaRegUser className="text-base sm:text-lg" />
+                        </button>
 
-                            {/* <button onClick={handlePostAdd} className="group relative inline-flex py-2 text-sm md:text-base items-center justify-center rounded-full bg-primary px-3 md:px-5 font-normal text-white transition hover:scale-105 cursor-pointer font-montserrat overflow-hidden">
-                                
-                                <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-12deg)_translateX(-100%)] group-hover:duration-1000 group-hover:[transform:skew(-12deg)_translateX(100%)]">
-                                    <div className="relative h-full w-8 bg-white/20"></div>
-                                </div>
-                            </button> */}
-
-
-                            <button onClick={handleMoveProfile} className='cursor-pointer bg-slate-50 border border-stroke rounded-full p-2.5'>
-                                <FaRegUser className="text-lg md:text-xl text-gray-800" />
-                            </button>
-
-                            <section className='lg:hidden'>
-                                <SmNavSheet />
-                            </section>
-
-                        </div>
+                        <section className='lg:hidden'>
+                            <SmNavSheet />
+                        </section>
                     </div>
                 </div>
             </div>
-        </>
-
+        </div>
     )
 }
 

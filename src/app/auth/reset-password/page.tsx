@@ -6,13 +6,12 @@ import { IoIosArrowForward } from 'react-icons/io'
 
 export const metadata: Metadata = {
     title: "Reset Password",
-    description: "Runbd Reset Password Page",
-    metadataBase: new URL('https://runbd.org'),
+    description: "Account Reset Password Page",
+    metadataBase: new URL('https://asifzonebd.com'),
     alternates: {
         canonical: '/auth/reset-password',
         languages: {
             en: `/auth/reset-password`,
-            bn: `/bn/auth/reset-password`,
             'x-default': `/auth/reset-password`
         }
     },
