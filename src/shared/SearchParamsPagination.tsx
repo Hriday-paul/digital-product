@@ -1,7 +1,6 @@
 "use client"
 import Pagination from '@/components/ui/Pagination'
-import { useRouter } from '@/i18n/navigation';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function SearchParamsPagination({ totalData = 1, activePage = 1 }: { totalData: number, activePage: number }) {
 

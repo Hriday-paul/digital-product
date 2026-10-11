@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function useUpdateMultipleSearchParams(targetId?: string) {
   const router = useRouter();
