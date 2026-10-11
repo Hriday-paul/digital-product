@@ -12,7 +12,7 @@ import {
 import { RiMenu3Fill } from 'react-icons/ri'
 import { navitems } from './Navbar'
 import Image from 'next/image'
-import logo from "@/assets/logo1.webp"
+import logo from "@/assets/logo.png"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {

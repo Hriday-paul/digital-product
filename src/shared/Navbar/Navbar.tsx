@@ -1,7 +1,7 @@
 "use client"
 import { FaRegUser } from "react-icons/fa"
 import SmNavSheet from "./SmNavsheet"
-import logo from "@/assets/logo1.webp"
+import logo from "@/assets/logo.png"
 import Image from 'next/image'
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
