@@ -105,10 +105,10 @@ export default function ContactSection() {
                     Message Us
                   </span>
                   <a
-                    href="mailto:digimart24@gmail.com"
+                    href="mailto:support@asifzonebd.com"
                     className="text-base sm:text-lg font-semibold text-primary transition-colors font-montserrat"
                   >
-                    digimart24@gmail.com
+                    support@asifzonebd.com
                   </a>
                 </div>
               </div>

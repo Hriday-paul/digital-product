@@ -19,16 +19,14 @@ export default function Footer() {
             <Link href="/" className="inline-flex items-center gap-2">
               <Image
                 src={logo}
-                alt="DigiMart"
-                className="h-10 sm:h-12 w-auto object-contain brightness-110"
+                alt="AsifZoneBd"
+                className="h-10 sm:h-12 lg:h-16 w-auto object-contain brightness-110"
               />
-              <span className="font-montserrat font-bold text-2xl sm:text-3xl text-white tracking-tight">
-                DigiMart
-              </span>
+              <p className="text-lg sm:text-xl font-bold">AsifZoneBd</p>
             </Link>
 
             <p className="mt-3 text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed max-w-xs">
-              DigiMart is your trusted digital marketplace, offering a wide range of services and products to meet your needs.
+              AsifZoneBd is your trusted digital marketplace, offering a wide range of services and products to meet your needs.
             </p>
 
             {/* Social Icons */}
@@ -110,10 +108,10 @@ export default function Footer() {
                   Message Us
                 </span>
                 <a
-                  href="mailto:digimart24@gmail.com"
+                  href="mailto:support@asifzonebd.com"
                   className="text-base sm:text-lg font-semibold text-white hover:text-primary transition-colors font-montserrat"
                 >
-                  digimart24@gmail.com
+                  support@asifzonebd.com
                 </a>
               </div>
             </div>
@@ -150,7 +148,7 @@ export default function Footer() {
             {/* Bottom Row: Copyright + Payment Badges */}
             <div className="space-y-4 flex flex-col lg:justify-end">
               <p className="text-sm text-zinc-300 font-normal lg:text-right">
-                Copyright © {new Date().getFullYear()} DigiMart, All rights reserved.
+                Copyright © {new Date().getFullYear()} AsifZoneBd, All rights reserved.
               </p>
 
               {/* Payment Method Badges */}

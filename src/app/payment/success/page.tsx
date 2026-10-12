@@ -3,7 +3,7 @@ import PaymentSuccess from "@/shared/PaymentSuccess";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Order & Payment Success | DigiMart",
+  title: "Order & Payment Success",
   description: "Your order and payment have been submitted successfully.",
 };
 

@@ -29,13 +29,13 @@ const bannerSlides: BannerSlide[] = [
   {
     id: 1,
     image: slide1,
-    alt: "DigiMart Banner 1 - Discover Digital Products & Services",
+    alt: "AsifZoneBd Banner 1 - Discover Digital Products & Services",
     link: "/shop",
   },
   {
     id: 2,
     image: slide2,
-    alt: "DigiMart Banner 2 - Special Deals & Offers",
+    alt: "AsifZoneBd Banner 2 - Special Deals & Offers",
     link: "/shop",
   },
 ];

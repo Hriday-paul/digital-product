@@ -86,7 +86,7 @@ const SmNavSheet = () => {
                             >
                                 <Image
                                     src={logo}
-                                    alt="DigiMart"
+                                    alt="AsifZoneBd"
                                     className="h-10 w-auto object-contain"
                                 />
                             </Link>
