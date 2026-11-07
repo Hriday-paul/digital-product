@@ -30,9 +30,14 @@ export type OrderStatus = "PENDING" | "COMPLETED" | "CANCELLED" | string;
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | string;
 export type PaymentMethodType = "BKASH" | "NAGAD" | "ROCKET";
 
-export interface PlaceOrderPayload {
+export interface OrderServicePayloadItem {
     serviceId: string;
-    variantId: string;
+    varientId: string;
+    quantity: number;
+}
+
+export interface PlaceOrderPayload {
+    services: OrderServicePayloadItem[];
     customerName: string;
     customerEmail: string;
     customerWhatsapp: string;
@@ -101,6 +106,7 @@ export interface ICategory {
     id: string;
     name: string;
     description: string | null;
+    services: IService[];
     createdAt: string;
     updatedAt: string;
 }

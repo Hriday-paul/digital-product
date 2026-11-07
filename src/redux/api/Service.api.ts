@@ -9,6 +9,11 @@ const ServcieApi = baseApi.injectEndpoints({
                 params: query
             }),
         }),
+        servicesByCategory: builder.query<{ message: string, data: ICategory[] }, void>({
+            query: () => ({
+                url: '/services/by-category'
+            }),
+        }),
         categories: builder.query<{ message: string, data: ICategory[] }, void>({
             query: () => ({
                 url: '/categories'
@@ -22,4 +27,4 @@ const ServcieApi = baseApi.injectEndpoints({
     })
 })
 
-export const { useLazyServicesQuery, useServicesQuery, useCategoriesQuery, useServiceBySlugQuery } = ServcieApi;
+export const { useLazyServicesQuery, useServicesQuery, useServicesByCategoryQuery, useCategoriesQuery, useServiceBySlugQuery } = ServcieApi;

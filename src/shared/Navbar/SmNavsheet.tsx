@@ -60,10 +60,10 @@ const SmNavSheet = () => {
         <div>
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger
-                    className="flex items-center justify-center size-10 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 text-white border border-white/15 transition-all duration-150 cursor-pointer"
+                    className="cursor-pointer size-10 flex items-center justify-center rounded-full border border-zinc-200 bg-gradient-to-b from-white to-zinc-100 text-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_3px_rgba(0,0,0,0.08)] transition-all hover:text-primary hover:to-zinc-50 hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_6px_rgba(0,0,0,0.12)] active:scale-95"
                     aria-label="Open navigation menu"
                 >
-                    <RiMenu3Fill className="text-xl text-white" />
+                    <RiMenu3Fill className="text-xl" />
                 </SheetTrigger>
 
                 <SheetContent

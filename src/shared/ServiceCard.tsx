@@ -1,16 +1,42 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { IService } from "@/redux/types";
+import { RootState } from "@/redux/store";
+import { toggleWishlist } from "@/redux/slices/wishlistSlice";
 
 const ServiceCard = ({ service, className }: { service: IService; className?: string }) => {
-  const { slug, title, variants, images } = service;
+  const { id, slug, title, variants, images } = service;
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((state: RootState) => state.wishlistSlice.items);
 
-  const minVariantPrice = variants?.sort((a, b) => a.final_price - b.final_price)[0]?.final_price;
+  const isWishlisted = wishlistItems.some(
+    (item) => (id && item.id === id) || (slug && item.slug === slug)
+  );
+
+  const minVariantPrice = variants?.length
+    ? [...variants].sort((a, b) => a.final_price - b.final_price)[0]?.final_price
+    : undefined;
 
   const displayPrice = minVariantPrice ? `৳${minVariantPrice.toFixed(2)}` : "৳0";
-  
+
   const image = images?.[0]?.url || "/placeholder.jpg";
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(toggleWishlist(service));
+    if (isWishlisted) {
+      toast.info(`${title} removed from wishlist`);
+    } else {
+      toast.success(`${title} added to wishlist!`);
+    }
+  };
 
   return (
     <div
@@ -19,6 +45,21 @@ const ServiceCard = ({ service, className }: { service: IService; className?: st
         className
       )}
     >
+      {/* Wishlist Button */}
+      <button
+        type="button"
+        onClick={handleToggleWishlist}
+        aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        className={cn(
+          "absolute top-2.5 right-2.5 z-10 size-8 sm:size-9 rounded-full flex items-center justify-center border shadow-xs backdrop-blur-xs transition-all duration-200 cursor-pointer active:scale-90",
+          isWishlisted
+            ? "bg-rose-500 text-white border-rose-500 hover:bg-rose-600"
+            : "bg-white/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-300 border-zinc-200/80 dark:border-zinc-700 hover:text-rose-500 hover:border-rose-300"
+        )}
+      >
+        <Heart className={cn("size-4 transition-transform", isWishlisted && "fill-current scale-110")} />
+      </button>
+
       {/* Edge-to-edge Top Image */}
       <Link
         href={`/shop/${slug}`}

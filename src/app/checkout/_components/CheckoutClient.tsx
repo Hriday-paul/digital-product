@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import {
   ChevronRight,
@@ -13,14 +14,22 @@ import {
   CreditCard,
   User,
   Mail,
-  Phone,
   FileText,
   ShieldCheck,
   Loader2,
-  Sparkles,
+  ShoppingBag,
+  Trash2,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { IService, IServiceVariant, PaymentMethodType, PlaceOrderPayload } from "@/redux/types";
+import { PaymentMethodType, PlaceOrderPayload } from "@/redux/types";
+import { RootState } from "@/redux/store";
+import {
+  clearCart,
+  removeFromCart,
+  updateCartQuantity,
+} from "@/redux/slices/cartSlice";
 
 import { cn } from "@/lib/utils";
 import OrderGuide from "./OrderGuide";
@@ -29,11 +38,6 @@ import bkashImg from "@/assets/Home/payment/bkash.webp";
 import nagadImg from "@/assets/Home/payment/nagad.webp";
 import rocketImg from "@/assets/Home/payment/rocket.png";
 import { usePlaceOrderMutation } from "@/redux/api/Order.api";
-
-interface CheckoutClientProps {
-  service: IService;
-  variant: IServiceVariant;
-}
 
 interface CheckoutFormData {
   customerName: string;
@@ -68,9 +72,17 @@ const PAYMENT_METHODS = [
   },
 ];
 
-export default function CheckoutClient({ service, variant }: CheckoutClientProps) {
+const formatPrice = (val?: number) => {
+  if (val === undefined || val === null || isNaN(val)) return "0";
+  return Number.isInteger(val) ? val.toString() : val.toFixed(2);
+};
+
+export default function CheckoutClient() {
   const router = useRouter();
-  const [PlaceOrder, {isLoading : isSubmitting}] = usePlaceOrderMutation();
+  const dispatch = useDispatch();
+  const cartItems = useSelector((state: RootState) => state.cartSlice.items);
+
+  const [PlaceOrder, { isLoading: isSubmitting }] = usePlaceOrderMutation();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>("BKASH");
   const [copied, setCopied] = useState(false);
 
@@ -82,7 +94,18 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
     mode: "onTouched",
   });
 
-  const activeMethodConfig = PAYMENT_METHODS.find((m) => m.id === selectedMethod) || PAYMENT_METHODS[0];
+  const activeMethodConfig =
+    PAYMENT_METHODS.find((m) => m.id === selectedMethod) || PAYMENT_METHODS[0];
+
+  const totalBasePrice = cartItems.reduce(
+    (sum, item) => sum + (item.variant.base_price || item.variant.final_price) * item.quantity,
+    0
+  );
+  const totalFinalPrice = cartItems.reduce(
+    (sum, item) => sum + item.variant.final_price * item.quantity,
+    0
+  );
+  const totalDiscount = Math.max(0, totalBasePrice - totalFinalPrice);
 
   const handleCopyNumber = () => {
     navigator.clipboard.writeText(activeMethodConfig.number);
@@ -92,10 +115,18 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
   };
 
   const onSubmit = async (data: CheckoutFormData) => {
+    if (!cartItems.length) {
+      toast.error("Your cart is empty. Please add a service first.");
+      return;
+    }
+
     try {
       const payload: PlaceOrderPayload = {
-        serviceId: service.id,
-        variantId: variant.id,
+        services: cartItems.map((item) => ({
+          serviceId: item.serviceId,
+          varientId: item.variant.id,
+          quantity: item.quantity,
+        })),
         customerName: data.customerName,
         customerEmail: data.customerEmail,
         customerWhatsapp: data.customerWhatsapp,
@@ -103,18 +134,46 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
         paymentMethod: selectedMethod,
         accountNumber: data.accountNumber,
         transactionId: data.transactionId,
-        amount: variant.final_price,
+        amount: totalFinalPrice,
       };
 
-      await PlaceOrder(payload);
+      await PlaceOrder(payload).unwrap();
+      dispatch(clearCart());
       toast.success("অর্ডার সফলভাবে গ্রহণ করা হয়েছে!");
       router.push("/payment/success");
     } catch (err: any) {
-      toast.error(err?.message || "অর্ডার সম্পন্ন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      toast.error(
+        err?.data?.message ||
+          err?.message ||
+          "অর্ডার সম্পন্ন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।"
+      );
     }
   };
 
-  const serviceImage = service.images?.[0]?.url || "/serviceImg.webp";
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-[75vh] bg-[#FBFBFB] dark:bg-zinc-950 flex flex-col items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-8 text-center shadow-xs">
+          <div className="mx-auto size-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4">
+            <ShoppingBag className="size-8" />
+          </div>
+          <h1 className="font-montserrat font-bold text-xl sm:text-2xl text-zinc-900 dark:text-zinc-100">
+            Your Cart is Empty
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-montserrat leading-relaxed">
+            You haven&apos;t added any digital services to your cart yet. Browse our shop and add your desired plan to checkout.
+          </p>
+          <Link
+            href="/shop"
+            className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white font-montserrat font-semibold text-sm shadow-xs transition-all"
+          >
+            <ShoppingBag className="size-4" />
+            <span>Explore Services</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FBFBFB] dark:bg-zinc-950 pb-20">
@@ -131,10 +190,6 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
             <ChevronRight className="size-3.5 text-zinc-400" />
             <Link href="/shop" className="hover:text-primary transition-colors">
               Shop
-            </Link>
-            <ChevronRight className="size-3.5 text-zinc-400" />
-            <Link href={`/shop/${service.slug}`} className="hover:text-primary transition-colors truncate max-w-xs">
-              {service.title}
             </Link>
             <ChevronRight className="size-3.5 text-zinc-400" />
             <span className="text-primary font-medium">Checkout</span>
@@ -169,7 +224,10 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                 <div className="space-y-4">
                   {/* Name */}
                   <div>
-                    <label htmlFor="customerName" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5">
+                    <label
+                      htmlFor="customerName"
+                      className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5"
+                    >
                       Customer Name (আপনার নাম) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -188,7 +246,9 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                       )}
                     />
                     {errors.customerName && (
-                      <p className="mt-1 text-xs text-red-500 font-montserrat">{errors.customerName.message}</p>
+                      <p className="mt-1 text-xs text-red-500 font-montserrat">
+                        {errors.customerName.message}
+                      </p>
                     )}
                   </div>
 
@@ -196,7 +256,10 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Email */}
                     <div>
-                      <label htmlFor="customerEmail" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5">
+                      <label
+                        htmlFor="customerEmail"
+                        className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5"
+                      >
                         <Mail className="size-3.5 text-zinc-400" />
                         <span>Email Address (ইমেইল)</span> <span className="text-red-500">*</span>
                       </label>
@@ -219,13 +282,18 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                         )}
                       />
                       {errors.customerEmail && (
-                        <p className="mt-1 text-xs text-red-500 font-montserrat">{errors.customerEmail.message}</p>
+                        <p className="mt-1 text-xs text-red-500 font-montserrat">
+                          {errors.customerEmail.message}
+                        </p>
                       )}
                     </div>
 
                     {/* WhatsApp */}
                     <div>
-                      <label htmlFor="customerWhatsapp" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5">
+                      <label
+                        htmlFor="customerWhatsapp"
+                        className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5"
+                      >
                         <FaWhatsapp className="size-3.5 text-emerald-500" />
                         <span>WhatsApp Number</span> <span className="text-red-500">*</span>
                       </label>
@@ -248,14 +316,19 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                         )}
                       />
                       {errors.customerWhatsapp && (
-                        <p className="mt-1 text-xs text-red-500 font-montserrat">{errors.customerWhatsapp.message}</p>
+                        <p className="mt-1 text-xs text-red-500 font-montserrat">
+                          {errors.customerWhatsapp.message}
+                        </p>
                       )}
                     </div>
                   </div>
 
                   {/* Customer Note */}
                   <div>
-                    <label htmlFor="customerNote" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5">
+                    <label
+                      htmlFor="customerNote"
+                      className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5 flex items-center gap-1.5"
+                    >
                       <FileText className="size-3.5 text-zinc-400" />
                       <span>Additional Note / Instructions (ঐচ্ছিক)</span>
                     </label>
@@ -309,7 +382,9 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                         <div
                           className={cn(
                             "size-5 rounded-full flex items-center justify-center transition-colors",
-                            isSelected ? "bg-primary text-white" : "border-2 border-zinc-300 dark:border-zinc-600"
+                            isSelected
+                              ? "bg-primary text-white"
+                              : "border-2 border-zinc-300 dark:border-zinc-600"
                           )}
                         >
                           {isSelected && <Check className="size-3 stroke-[3]" />}
@@ -362,7 +437,7 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                   </div>
 
                   <p className="text-xs text-zinc-500 font-montserrat">
-                    📌 অনুগ্রহ করে <strong>৳{variant.final_price}</strong> টাকা উক্ত নম্বরে সেন্ড মানি করুন। এরপর নিচের বক্সে আপনার প্রেরক নম্বর এবং TrxID দিয়ে অর্ডার সম্পন্ন করুন।
+                    📌 অনুগ্রহ করে <strong>৳{formatPrice(totalFinalPrice)}</strong> টাকা উক্ত নম্বরে সেন্ড মানি করুন। এরপর নিচের বক্সে আপনার প্রেরক নম্বর এবং TrxID দিয়ে অর্ডার সম্পন্ন করুন।
                   </p>
                 </div>
 
@@ -370,7 +445,10 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                 <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Account Number */}
                   <div>
-                    <label htmlFor="accountNumber" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5">
+                    <label
+                      htmlFor="accountNumber"
+                      className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5"
+                    >
                       Sender Account Number (প্রেরক নম্বর) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -379,7 +457,10 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                       placeholder="যে নম্বর থেকে টাকা পাঠিয়েছেন (01XXXXXXXXX)"
                       {...register("accountNumber", {
                         required: "Account number is required",
-                        minLength: { value: 11, message: "Enter a valid 11-digit mobile number" },
+                        minLength: {
+                          value: 11,
+                          message: "Enter a valid 11-digit mobile number",
+                        },
                       })}
                       className={cn(
                         "w-full px-4 py-3 rounded-lg text-sm font-montserrat bg-[#F4F6F8] dark:bg-zinc-800 border transition-all outline-none",
@@ -389,13 +470,18 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                       )}
                     />
                     {errors.accountNumber && (
-                      <p className="mt-1 text-xs text-red-500 font-montserrat">{errors.accountNumber.message}</p>
+                      <p className="mt-1 text-xs text-red-500 font-montserrat">
+                        {errors.accountNumber.message}
+                      </p>
                     )}
                   </div>
 
                   {/* Transaction ID */}
                   <div>
-                    <label htmlFor="transactionId" className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5">
+                    <label
+                      htmlFor="transactionId"
+                      className="block text-xs sm:text-sm font-semibold font-montserrat text-zinc-800 dark:text-zinc-200 mb-1.5"
+                    >
                       Transaction ID (TrxID) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -414,7 +500,9 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                       )}
                     />
                     {errors.transactionId && (
-                      <p className="mt-1 text-xs text-red-500 font-montserrat">{errors.transactionId.message}</p>
+                      <p className="mt-1 text-xs text-red-500 font-montserrat">
+                        {errors.transactionId.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -435,7 +523,7 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
                   ) : (
                     <>
                       <ShieldCheck className="size-5" />
-                      <span>Confirm & Place Order (৳{variant.final_price})</span>
+                      <span>Confirm & Place Order (৳{formatPrice(totalFinalPrice)})</span>
                     </>
                   )}
                 </button>
@@ -445,54 +533,143 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
               </div>
             </div>
 
-            {/* Right Column: Service Info & Order Guide */}
+            {/* Right Column: Cart Items Summary & Order Guide */}
             <div className="lg:col-span-5 space-y-6">
-              {/* Service Summary Card */}
+              {/* Order Summary Card */}
               <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-xs">
-                <h3 className="font-montserrat font-bold text-base text-zinc-900 dark:text-zinc-100 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                  Order Summary
-                </h3>
+                <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                  <h3 className="font-montserrat font-bold text-base text-zinc-900 dark:text-zinc-100">
+                    Order Summary ({cartItems.length}{" "}
+                    {cartItems.length === 1 ? "item" : "items"})
+                  </h3>
+                </div>
 
-                {/* Service Visual & Title */}
-                <div className="mt-4 flex gap-4 items-center">
-                  <div className="relative size-20 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-800">
-                    <Image
-                      src={serviceImage}
-                      alt={service.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[11px] font-semibold text-primary font-montserrat uppercase block">
-                      {service.category?.name || "Digital Service"}
-                    </span>
-                    <h4 className="font-montserrat font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate mt-0.5">
-                      {service.title}
-                    </h4>
-                    <p className="text-xs text-zinc-500 font-montserrat mt-1">
-                      Plan: <strong className="text-zinc-800 dark:text-zinc-200">{variant.timeLine}</strong> ({variant.accountType})
-                    </p>
-                  </div>
+                {/* Cart Items List */}
+                <div className="mt-4 divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[380px] overflow-y-auto pr-1">
+                  {cartItems.map((item) => (
+                    <div
+                      key={`${item.serviceId}-${item.variant.id}`}
+                      className="py-3.5 first:pt-0 last:pb-0 flex gap-3.5 items-start"
+                    >
+                      <div className="relative size-16 sm:size-18 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-200 dark:border-zinc-800">
+                        <Image
+                          src={item.photo || "/serviceImg.webp"}
+                          alt={item.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <Link
+                            href={item.slug ? `/shop/${item.slug}` : "/shop"}
+                            className="font-montserrat font-bold text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 hover:text-primary transition-colors line-clamp-1"
+                          >
+                            {item.title}
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              dispatch(
+                                removeFromCart({
+                                  serviceId: item.serviceId,
+                                  variantId: item.variant.id,
+                                })
+                              )
+                            }
+                            aria-label="Remove item"
+                            className="text-zinc-400 hover:text-red-500 transition-colors p-0.5 cursor-pointer shrink-0"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+
+                        <p className="text-[11px] sm:text-xs text-zinc-500 font-montserrat mt-0.5">
+                          Plan:{" "}
+                          <strong className="text-zinc-800 dark:text-zinc-200">
+                            {item.variant.timeLine}
+                          </strong>
+                          {item.variant.accountType ? ` (${item.variant.accountType})` : ""}
+                        </p>
+
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          {/* Quantity Controls */}
+                          <div className="inline-flex items-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/60 p-0.5">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch(
+                                  updateCartQuantity({
+                                    serviceId: item.serviceId,
+                                    variantId: item.variant.id,
+                                    quantity: item.quantity - 1,
+                                  })
+                                )
+                              }
+                              aria-label="Decrease quantity"
+                              className="size-6 rounded flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                            >
+                              <Minus className="size-3" />
+                            </button>
+                            <span className="w-7 text-center font-montserrat font-semibold text-xs text-zinc-900 dark:text-zinc-100 select-none">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch(
+                                  updateCartQuantity({
+                                    serviceId: item.serviceId,
+                                    variantId: item.variant.id,
+                                    quantity: item.quantity + 1,
+                                  })
+                                )
+                              }
+                              aria-label="Increase quantity"
+                              className="size-6 rounded flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                            >
+                              <Plus className="size-3" />
+                            </button>
+                          </div>
+
+                          {/* Item Subtotal */}
+                          <span className="font-montserrat font-bold text-xs sm:text-sm text-primary">
+                            ৳{formatPrice(item.variant.final_price * item.quantity)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Price Breakdown */}
                 <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2.5 text-xs sm:text-sm font-montserrat">
                   <div className="flex items-center justify-between text-zinc-600 dark:text-zinc-400">
-                    <span>Base Price</span>
-                    <span className="line-through text-zinc-400">৳{variant.base_price}</span>
+                    <span>Subtotal (Base Price)</span>
+                    <span
+                      className={cn(
+                        totalDiscount > 0
+                          ? "line-through text-zinc-400"
+                          : "font-semibold text-zinc-800 dark:text-zinc-200"
+                      )}
+                    >
+                      ৳{formatPrice(totalBasePrice)}
+                    </span>
                   </div>
 
-                  {variant.discount > 0 && (
+                  {totalDiscount > 0 && (
                     <div className="flex items-center justify-between text-emerald-600 font-medium">
-                      <span>Discount</span>
-                      <span>-৳{variant.base_price - variant.final_price} ({variant.discount}%)</span>
+                      <span>Total Discount</span>
+                      <span>-৳{formatPrice(totalDiscount)}</span>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between pt-3 border-t border-zinc-200 dark:border-zinc-800 text-base font-bold text-zinc-900 dark:text-zinc-100">
                     <span>Total Payable</span>
-                    <span className="text-primary font-extrabold text-xl">৳{variant.final_price}</span>
+                    <span className="text-primary font-extrabold text-xl">
+                      ৳{formatPrice(totalFinalPrice)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -506,4 +683,3 @@ export default function CheckoutClient({ service, variant }: CheckoutClientProps
     </div>
   );
 }
-

@@ -1,6 +1,10 @@
 "use client"
 import { FaRegUser } from "react-icons/fa"
+import { Heart } from "lucide-react"
+import { useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
 import SmNavSheet from "./SmNavsheet"
+import CartSheet from "./CartSheet"
 import logo from "@/assets/logo.png"
 import Image from 'next/image'
 import { usePathname, useRouter } from "next/navigation"
@@ -15,9 +19,14 @@ export const navitems = [
 function Navbar() {
     const router = useRouter();
     const pathname = usePathname();
+    const wishlistCount = useSelector((state: RootState) => state.wishlistSlice.items.length);
 
     const handleMoveProfile = () => {
         router.push(`/account`);
+    }
+
+    const handleMoveWishlist = () => {
+        router.push(`/wishlist`);
     }
 
     return (
@@ -61,6 +70,21 @@ function Navbar() {
                     </nav>
 
                     <div className="flex flex-row gap-x-2.5 sm:gap-x-3 items-center">
+                        <button
+                            onClick={handleMoveWishlist}
+                            aria-label="Wishlist"
+                            className='relative cursor-pointer size-10 flex items-center justify-center rounded-full border border-zinc-200 bg-gradient-to-b from-white to-zinc-100 text-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_3px_rgba(0,0,0,0.08)] transition-all hover:text-rose-500 hover:to-zinc-50 hover:shadow-[inset_0_1px_0_rgba(255,255,255,1),0_2px_6px_rgba(0,0,0,0.12)] active:scale-95'
+                        >
+                            <Heart className="size-4.5 sm:size-5" />
+                            {wishlistCount > 0 && (
+                                <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-rose-500 text-white text-[10px] font-montserrat font-bold flex items-center justify-center shadow-xs">
+                                    {wishlistCount > 99 ? "99+" : wishlistCount}
+                                </span>
+                            )}
+                        </button>
+
+                        <CartSheet />
+
                         <button
                             onClick={handleMoveProfile}
                             aria-label="User Account"

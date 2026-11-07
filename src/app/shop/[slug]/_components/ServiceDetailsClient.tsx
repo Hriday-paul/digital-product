@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { IService, IServiceVariant } from "@/redux/types";
+import { RootState } from "@/redux/store";
+import { addToCart } from "@/redux/slices/cartSlice";
+import { toggleWishlist } from "@/redux/slices/wishlistSlice";
 import {
   ChevronRight,
   ShieldCheck,
@@ -16,6 +20,10 @@ import {
   Clock,
   UserCheck,
   Sparkles,
+  ShoppingCart,
+  Minus,
+  Plus,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -73,6 +81,9 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
     variants && variants.length > 0 ? variants[0] : undefined
   );
 
+  // Quantity state
+  const [quantity, setQuantity] = useState<number>(1);
+
   // Selected image index state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -82,15 +93,67 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
       : [{ id: "fallback", url: "/serviceImg.webp", key: "fallback" }];
 
   const currentImageUrl = displayImages[activeImageIndex]?.url || "/serviceImg.webp";
+  const primaryPhoto = displayImages[0]?.url || "/serviceImg.webp";
 
   const router = useRouter();
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((state: RootState) => state.wishlistSlice.items);
+
+  const isWishlisted = wishlistItems.some(
+    (item) =>
+      (service.id && item.id === service.id) ||
+      (service.slug && item.slug === service.slug)
+  );
+
+  const handleToggleWishlist = () => {
+    dispatch(toggleWishlist(service));
+    if (isWishlisted) {
+      toast.info(`${service.title} removed from wishlist`);
+    } else {
+      toast.success(`${service.title} added to wishlist!`);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedVariant) {
+      toast.error("Please select a variant to add to cart");
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        serviceId: service.id,
+        slug: service.slug,
+        title: service.title,
+        photo: primaryPhoto,
+        categoryName: service.category?.name,
+        variant: selectedVariant,
+        quantity,
+      })
+    );
+
+    toast.success(`${service.title} (${selectedVariant.timeLine}) added to cart!`);
+  };
 
   const handleBuyNow = () => {
     if (!selectedVariant) {
       toast.error("Please select a variant to continue");
       return;
     }
-    router.push(`/checkout/${service.slug}?varientId=${selectedVariant.id}`);
+
+    dispatch(
+      addToCart({
+        serviceId: service.id,
+        slug: service.slug,
+        title: service.title,
+        photo: primaryPhoto,
+        categoryName: service.category?.name,
+        variant: selectedVariant,
+        quantity,
+      })
+    );
+
+    router.push("/checkout");
   };
 
   return (
@@ -321,18 +384,83 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
               </div>
             )}
 
-            {/* Buy Now Action */}
-            <div className="mt-8 flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={handleBuyNow}
-                className="w-full py-4 px-8 rounded-xl bg-primary hover:bg-[#1577b0] active:scale-[0.99] text-white font-montserrat font-bold text-base sm:text-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer"
-              >
-                <CreditCard className="size-5" />
-                <span>
-                  Buy Now {selectedVariant ? `• ৳${formatPrice(selectedVariant.final_price)}` : ""}
-                </span>
-              </button>
+            {/* Quantity & Cart / Buy Now / Wishlist Actions */}
+            <div className="mt-8 space-y-4">
+              {/* Quantity Selector & Wishlist Button */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-semibold font-montserrat text-zinc-900 dark:text-zinc-100">
+                    Quantity:
+                  </span>
+                  <div className="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 shadow-2xs">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                      disabled={quantity <= 1}
+                      aria-label="Decrease quantity"
+                      className="size-9 rounded-lg flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      <Minus className="size-4" />
+                    </button>
+                    <span className="w-11 text-center font-montserrat font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 select-none">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((prev) => prev + 1)}
+                      aria-label="Increase quantity"
+                      className="size-9 rounded-lg flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                    >
+                      <Plus className="size-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleToggleWishlist}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border font-montserrat font-semibold text-xs sm:text-sm transition-all duration-200 cursor-pointer active:scale-95",
+                    isWishlisted
+                      ? "bg-rose-50 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400"
+                      : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-rose-300 hover:text-rose-500"
+                  )}
+                >
+                  <Heart
+                    className={cn(
+                      "size-4 transition-transform",
+                      isWishlisted && "fill-current text-rose-500 scale-110"
+                    )}
+                  />
+                  <span>{isWishlisted ? "Wishlisted" : "Add to Wishlist"}</span>
+                </button>
+              </div>
+
+              {/* Add to Cart & Buy Now Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className="w-full py-4 px-6 rounded-xl border-2 border-primary bg-primary/5 hover:bg-primary/10 active:scale-[0.99] text-primary font-montserrat font-bold text-base sm:text-lg shadow-2xs transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <ShoppingCart className="size-5" />
+                  <span>Add to Cart</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleBuyNow}
+                  className="w-full py-4 px-6 rounded-xl bg-primary hover:bg-[#1577b0] active:scale-[0.99] text-white font-montserrat font-bold text-base sm:text-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer"
+                >
+                  <CreditCard className="size-5" />
+                  <span>
+                    Buy Now{" "}
+                    {selectedVariant
+                      ? `• ৳${formatPrice(selectedVariant.final_price * quantity)}`
+                      : ""}
+                  </span>
+                </button>
+              </div>
             </div>
 
             {/* Trust & Guarantee Highlights */}
