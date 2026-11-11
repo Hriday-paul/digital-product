@@ -155,6 +155,13 @@ export interface IServiceImage {
     key: string;
 }
 
+export interface IBanner {
+    id: string;
+    url: string;
+    key: string;
+    link?: string;
+}
+
 export interface IService {
     id: string;
     title: string;

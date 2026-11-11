@@ -19,12 +19,13 @@ import {
   Info,
   Clock,
   UserCheck,
-  Sparkles,
   ShoppingCart,
   Minus,
   Plus,
   Heart,
+  Share2,
 } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -32,34 +33,34 @@ const getBadgeDetails = (badge: string) => {
   const normalized = String(badge).toUpperCase().trim();
   switch (normalized) {
     case "BEST_VALUE":
-      return { label: "Best Value", className: "bg-emerald-600 text-white shadow-xs" };
+      return { label: "Best Value", className: "bg-emerald-600 text-white" };
     case "BEST_DEAL":
-      return { label: "Best Deal", className: "bg-emerald-600 text-white shadow-xs" };
+      return { label: "Best Deal", className: "bg-emerald-600 text-white" };
     case "MOST_POPULAR":
-      return { label: "Most Popular", className: "bg-primary text-white shadow-xs" };
+      return { label: "Popular", className: "bg-primary text-white" };
     case "TOP_PICK":
-      return { label: "Top Pick", className: "bg-primary text-white shadow-xs" };
+      return { label: "Top Pick", className: "bg-primary text-white" };
     case "RECOMMENDED":
-      return { label: "Recommended", className: "bg-primary text-white shadow-xs" };
+      return { label: "Recommended", className: "bg-primary text-white" };
     case "PREMIUM":
-      return { label: "Premium", className: "bg-purple-600 text-white shadow-xs" };
+      return { label: "Premium", className: "bg-purple-600 text-white" };
     case "EXCLUSIVE":
-      return { label: "Exclusive", className: "bg-purple-600 text-white shadow-xs" };
+      return { label: "Exclusive", className: "bg-purple-600 text-white" };
     case "SPECIAL_OFFER":
-      return { label: "Special Offer", className: "bg-rose-500 text-white shadow-xs" };
+      return { label: "Special Offer", className: "bg-rose-500 text-white" };
     case "LIMITED_STOCK":
-      return { label: "Limited Stock", className: "bg-rose-500 text-white shadow-xs" };
+      return { label: "Limited", className: "bg-rose-500 text-white" };
     case "NEW":
-      return { label: "New", className: "bg-amber-500 text-white shadow-xs" };
+      return { label: "New", className: "bg-amber-500 text-white" };
     case "TRENDING":
-      return { label: "Trending", className: "bg-orange-500 text-white shadow-xs" };
+      return { label: "Trending", className: "bg-orange-500 text-white" };
     default:
       return {
         label: normalized
           .replace(/_/g, " ")
           .toLowerCase()
           .replace(/\b\w/g, (c) => c.toUpperCase()),
-        className: "bg-primary text-white shadow-xs",
+        className: "bg-primary text-white",
       };
   }
 };
@@ -73,18 +74,16 @@ interface ServiceDetailsClientProps {
   service: IService;
 }
 
-export default function ServiceDetailsClient({ service }: ServiceDetailsClientProps) {
+export default function ServiceDetailsClient({
+  service,
+}: ServiceDetailsClientProps) {
   const { title, description, note, category, images, variants } = service;
 
-  // Selected variant state (defaults to first variant or fallback)
-  const [selectedVariant, setSelectedVariant] = useState<IServiceVariant | undefined>(
-    variants && variants.length > 0 ? variants[0] : undefined
-  );
+  const [selectedVariant, setSelectedVariant] = useState<
+    IServiceVariant | undefined
+  >(variants && variants.length > 0 ? variants[0] : undefined);
 
-  // Quantity state
   const [quantity, setQuantity] = useState<number>(1);
-
-  // Selected image index state
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const displayImages =
@@ -92,12 +91,15 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
       ? images
       : [{ id: "fallback", url: "/serviceImg.webp", key: "fallback" }];
 
-  const currentImageUrl = displayImages[activeImageIndex]?.url || "/serviceImg.webp";
+  const currentImageUrl =
+    displayImages[activeImageIndex]?.url || "/serviceImg.webp";
   const primaryPhoto = displayImages[0]?.url || "/serviceImg.webp";
 
   const router = useRouter();
   const dispatch = useDispatch();
-  const wishlistItems = useSelector((state: RootState) => state.wishlistSlice.items);
+  const wishlistItems = useSelector(
+    (state: RootState) => state.wishlistSlice.items
+  );
 
   const isWishlisted = wishlistItems.some(
     (item) =>
@@ -114,9 +116,16 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
     }
   };
 
+  const handleShare = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
   const handleAddToCart = () => {
     if (!selectedVariant) {
-      toast.error("Please select a variant to add to cart");
+      toast.error("Please select a plan first");
       return;
     }
 
@@ -137,7 +146,7 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
 
   const handleBuyNow = () => {
     if (!selectedVariant) {
-      toast.error("Please select a variant to continue");
+      toast.error("Please select a plan first");
       return;
     }
 
@@ -157,377 +166,420 @@ export default function ServiceDetailsClient({ service }: ServiceDetailsClientPr
   };
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB] dark:bg-zinc-950 pb-16 md:pb-24">
+    <div className="min-h-screen bg-[#F6F7F9] dark:bg-zinc-950 pb-12 font-montserrat">
       {/* Breadcrumb Navigation */}
-      <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 py-3.5">
+      <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200/80 dark:border-zinc-800 py-3">
         <div className="container mx-auto">
           <nav
             aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-1.5 text-xs sm:text-sm text-zinc-500 font-montserrat"
+            className="flex items-center gap-2 text-sm text-zinc-500 overflow-hidden"
           >
-            <Link href="/" className="hover:text-primary transition-colors">
+            <Link href="/" className="hover:text-primary transition-colors shrink-0">
               Home
             </Link>
-            <ChevronRight className="size-3.5 text-zinc-400" />
-            <Link href="/shop" className="hover:text-primary transition-colors">
+            <ChevronRight className="size-3.5 text-zinc-400 shrink-0" />
+            <Link href="/shop" className="hover:text-primary transition-colors shrink-0">
               Shop
             </Link>
             {category && (
               <>
-                <ChevronRight className="size-3.5 text-zinc-400" />
+                <ChevronRight className="size-3.5 text-zinc-400 shrink-0" />
                 <Link
-                  href={`/shop?category=${category?.name}`}
-                  className="hover:text-primary transition-colors"
+                  href={`/shop?category=${encodeURIComponent(category.name)}`}
+                  className="hover:text-primary transition-colors shrink-0 max-w-[160px] truncate"
                 >
                   {category.name}
                 </Link>
               </>
             )}
-            <ChevronRight className="size-3.5 text-zinc-400" />
-            <span className="text-zinc-900 dark:text-zinc-100 font-medium truncate max-w-xs sm:max-w-md">
+            <ChevronRight className="size-3.5 text-zinc-400 shrink-0" />
+            <span className="text-zinc-900 dark:text-zinc-100 font-medium truncate max-w-[220px] sm:max-w-md">
               {title}
             </span>
           </nav>
         </div>
       </div>
 
-      {/* Main Product / Service Container */}
-      <div className="container mx-auto mt-6 sm:mt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* Left Column: Image Gallery */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
-              <Image
-                src={currentImageUrl}
-                alt={title}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                className="object-cover"
-              />
-            </div>
+      {/* Main Top Card */}
+      <div className="container mx-auto mt-4 sm:mt-6 max-w-6xl">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 lg:p-7 shadow-xs">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            
+            {/* Left Column: Gallery & Highlights */}
+            <div className="lg:col-span-5 flex flex-col gap-3">
+              <div className="relative aspect-square w-full rounded-xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 shadow-2xs">
+                <Image
+                  src={currentImageUrl}
+                  alt={title}
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 45vw, 35vw"
+                  className="object-cover"
+                />
 
-            {/* Thumbnail Preview Selector */}
-            {displayImages.length > 1 && (
-              <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                {displayImages.map((img, idx) => (
+                {/* Wishlist & Share Quick Actions */}
+                <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
                   <button
-                    key={img.id || idx}
                     type="button"
-                    onClick={() => setActiveImageIndex(idx)}
+                    onClick={handleShare}
+                    title="Share service"
+                    aria-label="Share service"
+                    className="size-8 rounded-full bg-white/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-300 hover:text-primary border border-zinc-200/80 dark:border-zinc-700 flex items-center justify-center shadow-xs backdrop-blur-xs transition-colors cursor-pointer"
+                  >
+                    <Share2 className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleToggleWishlist}
+                    title={isWishlisted ? "Remove wishlist" : "Add wishlist"}
+                    aria-label="Toggle wishlist"
                     className={cn(
-                      "relative size-18 rounded-lg overflow-hidden border-2 shrink-0 transition-all cursor-pointer bg-white dark:bg-zinc-900",
-                      activeImageIndex === idx
-                        ? "border-primary ring-2 ring-primary/20 scale-105"
-                        : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 opacity-70 hover:opacity-100"
+                      "size-8 rounded-full border shadow-xs backdrop-blur-xs flex items-center justify-center transition-colors cursor-pointer",
+                      isWishlisted
+                        ? "bg-rose-500 text-white border-rose-500"
+                        : "bg-white/90 dark:bg-zinc-900/90 text-zinc-600 dark:text-zinc-300 border-zinc-200/80 dark:border-zinc-700 hover:text-rose-500"
                     )}
                   >
-                    <Image
-                      src={img.url}
-                      alt={`${title} thumbnail ${idx + 1}`}
-                      fill
-                      className="object-cover"
+                    <Heart
+                      className={cn(
+                        "size-4",
+                        isWishlisted && "fill-current"
+                      )}
                     />
                   </button>
-                ))}
+                </div>
               </div>
-            )}
-          </div>
 
-          {/* Right Column: Information, Variants & Actions */}
-          <div className="lg:col-span-7 flex flex-col">
-            {/* Category Pill */}
-            {category && (
-              <div className="mb-2.5">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold font-montserrat bg-primary/10 text-primary">
-                  {category.name}
+              {/* Thumbnails */}
+              {displayImages.length > 1 && (
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+                  {displayImages.map((img, idx) => (
+                    <button
+                      key={img.id || idx}
+                      type="button"
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={cn(
+                        "relative size-14 sm:size-16 rounded-lg overflow-hidden border-2 shrink-0 transition-all cursor-pointer bg-zinc-50 dark:bg-zinc-950",
+                        activeImageIndex === idx
+                          ? "border-primary ring-2 ring-primary/20 scale-102"
+                          : "border-zinc-200 dark:border-zinc-800 opacity-60 hover:opacity-100"
+                      )}
+                    >
+                      <Image
+                        src={img.url}
+                        alt={`${title} thumbnail ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Trust Badges */}
+              <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 grid grid-cols-3 gap-2 text-center">
+                <div className="flex flex-col items-center">
+                  <Zap className="size-4 text-amber-500 mb-1" />
+                  <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                    Instant Setup
+                  </span>
+                  <span className="text-[11px] text-zinc-400">Within minutes</span>
+                </div>
+                <div className="flex flex-col items-center border-x border-zinc-200/70 dark:border-zinc-700">
+                  <ShieldCheck className="size-4 text-emerald-500 mb-1" />
+                  <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                    100% Genuine
+                  </span>
+                  <span className="text-[11px] text-zinc-400">Guaranteed access</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Headphones className="size-4 text-primary mb-1" />
+                  <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">
+                    Full Support
+                  </span>
+                  <span className="text-[11px] text-zinc-400">24/7 online</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Information, Pricing, Variants & Actions */}
+            <div className="lg:col-span-7 flex flex-col justify-start">
+              {/* Category & Status */}
+              <div className="flex items-center gap-2.5 mb-2">
+                {category && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold bg-primary/10 text-primary">
+                    {category.name}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md">
+                  <Check className="size-3.5 stroke-[2.5]" /> In Stock & Instant Delivery
                 </span>
               </div>
-            )}
 
-            {/* Service Title */}
-            <h1 className="font-montserrat font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight">
-              {title}
-            </h1>
+              {/* Title */}
+              <h1 className="font-extrabold text-xl sm:text-2xl md:text-3xl text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug">
+                {title}
+              </h1>
 
-            {/* Price Display for Selected Variant */}
-            <div className="mt-4 flex flex-wrap items-baseline gap-3 pb-6 border-b border-zinc-200 dark:border-zinc-800">
-              {selectedVariant ? (
-                <>
-                  <span className="font-montserrat font-extrabold text-3xl sm:text-4xl text-primary">
-                    ৳{formatPrice(selectedVariant.final_price)}
-                  </span>
-                  {selectedVariant.base_price > selectedVariant.final_price && (
+              {/* Price Banner */}
+              <div className="mt-3.5 p-3.5 sm:p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200/80 dark:border-zinc-800 flex items-center justify-between gap-3">
+                <div className="flex items-baseline gap-2.5">
+                  {selectedVariant ? (
                     <>
-                      <span className="text-lg sm:text-xl font-medium text-zinc-400 line-through font-montserrat">
-                        ৳{formatPrice(selectedVariant.base_price)}
+                      <span className="font-extrabold text-2xl sm:text-3xl text-primary leading-none">
+                        ৳{formatPrice(selectedVariant.final_price)}
                       </span>
-                      {selectedVariant.discount > 0 && (
-                        <span className="px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-700 font-montserrat">
-                          Save {selectedVariant.discount}%
+                      {selectedVariant.base_price > selectedVariant.final_price && (
+                        <span className="text-base sm:text-lg font-medium text-zinc-400 line-through">
+                          ৳{formatPrice(selectedVariant.base_price)}
                         </span>
                       )}
                     </>
-                  )}
-                </>
-              ) : (
-                <span className="font-montserrat font-bold text-2xl text-primary">
-                  ৳{service.minPrice} – ৳{service.maxPrice}
-                </span>
-              )}
-            </div>
-
-            {/* Variant Select Options */}
-            {variants && variants.length > 0 && (
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-sm font-semibold font-montserrat text-zinc-900 dark:text-zinc-100">
-                    Select Plan / Option:
-                  </label>
-                  {selectedVariant && (
-                    <span className="text-xs font-montserrat text-primary font-medium">
-                      Selected: {selectedVariant.timeLine}
+                  ) : (
+                    <span className="font-extrabold text-2xl text-primary">
+                      ৳{service.minPrice} – ৳{service.maxPrice}
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
-                  {variants.map((v) => {
-                    const isSelected = selectedVariant?.id === v.id;
-                    const primaryBadge = v.badges && v.badges.length > 0 ? getBadgeDetails(v.badges[0]) : null;
+                {selectedVariant &&
+                  selectedVariant.base_price > selectedVariant.final_price && (
+                    <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-2xs">
+                      Save {selectedVariant.discount}%
+                    </span>
+                  )}
+              </div>
 
-                    return (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => setSelectedVariant(v)}
-                        className={cn(
-                          "relative flex flex-col justify-between p-4 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer min-h-[110px]",
-                          isSelected
-                            ? "border-primary bg-primary/[0.04] shadow-xs ring-1 ring-primary/20"
-                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700"
-                        )}
-                      >
-                        {/* Floating Top Badge */}
-                        {primaryBadge && (
-                          <div className="absolute -top-2.5 right-3.5 z-10">
+              {/* Variants Section */}
+              {variants && variants.length > 0 && (
+                <div className="mt-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                      Choose Plan / Duration:
+                    </label>
+                    {selectedVariant && (
+                      <span className="text-xs text-primary font-bold">
+                        Selected: {selectedVariant.timeLine}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Grid of Plans */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {variants.map((v) => {
+                      const isSelected = selectedVariant?.id === v.id;
+                      const primaryBadge =
+                        v.badges && v.badges.length > 0
+                          ? getBadgeDetails(v.badges[0])
+                          : null;
+
+                      return (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => setSelectedVariant(v)}
+                          className={cn(
+                            "relative flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 cursor-pointer",
+                            isSelected
+                              ? "border-primary bg-primary/[0.05] shadow-xs ring-1 ring-primary/30"
+                              : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-700"
+                          )}
+                        >
+                          {primaryBadge && (
                             <span
                               className={cn(
-                                "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold font-montserrat tracking-wide uppercase shadow-xs",
+                                "absolute -top-2 right-2.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider shadow-2xs",
                                 primaryBadge.className
                               )}
                             >
-                              <Sparkles className="size-2.5" />
-                              <span>{primaryBadge.label}</span>
+                              {primaryBadge.label}
                             </span>
-                          </div>
-                        )}
+                          )}
 
-                        {/* Top: Timeline & Checkmark */}
-                        <div>
-                          <div className="flex items-center justify-between gap-2 pr-1">
-                            <span className="font-montserrat font-bold text-sm sm:text-[15px] text-zinc-900 dark:text-zinc-100">
+                          <div className="min-w-0 pr-2">
+                            <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100 truncate block">
                               {v.timeLine}
                             </span>
+                            <span className="text-xs text-zinc-500 dark:text-zinc-400 block capitalize mt-0.5">
+                              {v.accountType
+                                ? `${v.accountType.toLowerCase()} license`
+                                : "Standard license"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2.5 shrink-0">
+                            <div className="text-right">
+                              <span className="font-extrabold text-sm sm:text-base text-primary block leading-tight">
+                                ৳{formatPrice(v.final_price)}
+                              </span>
+                              {v.base_price > v.final_price && (
+                                <span className="text-xs text-zinc-400 line-through block">
+                                  ৳{formatPrice(v.base_price)}
+                                </span>
+                              )}
+                            </div>
                             <div
                               className={cn(
-                                "size-5 rounded-full flex items-center justify-center shrink-0 transition-colors",
+                                "size-4.5 rounded-full flex items-center justify-center shrink-0 border transition-colors",
                                 isSelected
-                                  ? "bg-primary text-white"
-                                  : "border-2 border-zinc-300 dark:border-zinc-600"
+                                  ? "bg-primary border-primary text-white"
+                                  : "border-zinc-300 dark:border-zinc-600"
                               )}
                             >
                               {isSelected && <Check className="size-3 stroke-[3]" />}
                             </div>
                           </div>
-
-                          {/* Account Type Subtitle */}
-                          {v.accountType && (
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-montserrat mt-0.5 font-medium">
-                              {v.accountType.toLowerCase() === "personal"
-                                ? "Personal License"
-                                : v.accountType.toLowerCase() === "business"
-                                ? "Business License"
-                                : v.accountType}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Bottom Row: Price & Discount */}
-                        <div className="mt-3 flex items-baseline gap-2">
-                          <span className="font-montserrat font-extrabold text-lg text-primary">
-                            ৳{formatPrice(v.final_price)}
-                          </span>
-                          {v.base_price > v.final_price && (
-                            <span className="text-xs text-zinc-400 line-through font-montserrat">
-                              ৳{formatPrice(v.base_price)}
-                            </span>
-                          )}
-                          {v.discount > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded font-montserrat">
-                              -{v.discount}%
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Selected Variant Note */}
-                {selectedVariant?.note && (
-                  <div className="mt-3.5 flex items-start gap-2 p-3 rounded-lg bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40 text-xs font-montserrat text-blue-900 dark:text-blue-300">
-                    <Info className="size-4 shrink-0 text-primary mt-0.5" />
-                    <span>{selectedVariant.note}</span>
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* Quantity & Cart / Buy Now / Wishlist Actions */}
-            <div className="mt-8 space-y-4">
-              {/* Quantity Selector & Wishlist Button */}
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold font-montserrat text-zinc-900 dark:text-zinc-100">
-                    Quantity:
-                  </span>
-                  <div className="inline-flex items-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-1 shadow-2xs">
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                      disabled={quantity <= 1}
-                      aria-label="Decrease quantity"
-                      className="size-9 rounded-lg flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                    >
-                      <Minus className="size-4" />
-                    </button>
-                    <span className="w-11 text-center font-montserrat font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-100 select-none">
-                      {quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setQuantity((prev) => prev + 1)}
-                      aria-label="Increase quantity"
-                      className="size-9 rounded-lg flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-                    >
-                      <Plus className="size-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleToggleWishlist}
-                  className={cn(
-                    "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border font-montserrat font-semibold text-xs sm:text-sm transition-all duration-200 cursor-pointer active:scale-95",
-                    isWishlisted
-                      ? "bg-rose-50 dark:bg-rose-950/30 border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400"
-                      : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:border-rose-300 hover:text-rose-500"
+                  {selectedVariant?.note && (
+                    <div className="mt-2.5 flex items-start gap-2 p-2.5 rounded-lg bg-sky-50 dark:bg-sky-950/30 border border-sky-200/80 dark:border-sky-900/40 text-xs text-sky-900 dark:text-sky-300">
+                      <Info className="size-4 shrink-0 text-sky-600 mt-0.5" />
+                      <span className="leading-relaxed">{selectedVariant.note}</span>
+                    </div>
                   )}
-                >
-                  <Heart
-                    className={cn(
-                      "size-4 transition-transform",
-                      isWishlisted && "fill-current text-rose-500 scale-110"
-                    )}
-                  />
-                  <span>{isWishlisted ? "Wishlisted" : "Add to Wishlist"}</span>
-                </button>
-              </div>
+                </div>
+              )}
 
-              {/* Add to Cart & Buy Now Buttons */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="w-full py-4 px-6 rounded-xl border-2 border-primary bg-primary/5 hover:bg-primary/10 active:scale-[0.99] text-primary font-montserrat font-bold text-base sm:text-lg shadow-2xs transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer"
-                >
-                  <ShoppingCart className="size-5" />
-                  <span>Add to Cart</span>
-                </button>
+              {/* Quantity & CTA Row */}
+              <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+                      Quantity:
+                    </span>
+                    <div className="inline-flex items-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/80 p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                        disabled={quantity <= 1}
+                        aria-label="Decrease quantity"
+                        className="size-7 rounded-md flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-700 disabled:opacity-40 transition-colors cursor-pointer"
+                      >
+                        <Minus className="size-3.5" />
+                      </button>
+                      <span className="w-8 text-center font-bold text-sm text-zinc-900 dark:text-zinc-100 select-none">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((prev) => prev + 1)}
+                        aria-label="Increase quantity"
+                        className="size-7 rounded-md flex items-center justify-center text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                      >
+                        <Plus className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={handleBuyNow}
-                  className="w-full py-4 px-6 rounded-xl bg-primary hover:bg-[#1577b0] active:scale-[0.99] text-white font-montserrat font-bold text-base sm:text-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer"
-                >
-                  <CreditCard className="size-5" />
-                  <span>
-                    Buy Now{" "}
-                    {selectedVariant
-                      ? `• ৳${formatPrice(selectedVariant.final_price * quantity)}`
-                      : ""}
-                  </span>
-                </button>
+                  {selectedVariant && (
+                    <div className="text-right flex items-center gap-2">
+                      <span className="text-xs text-zinc-400">Total:</span>
+                      <span className="text-base sm:text-lg font-extrabold text-zinc-900 dark:text-zinc-100">
+                        ৳{formatPrice(selectedVariant.final_price * quantity)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Primary Action Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="py-3 px-4 rounded-xl border-2 border-primary/40 bg-primary/5 hover:bg-primary/10 active:scale-[0.99] text-primary font-bold text-sm sm:text-base transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
+                  >
+                    <ShoppingCart className="size-4.5" />
+                    <span>Add to Cart</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    className="py-3 px-4 rounded-xl bg-primary hover:bg-[#1577b0] active:scale-[0.99] text-white font-bold text-sm sm:text-base shadow-sm hover:shadow-md transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <CreditCard className="size-4.5" />
+                    <span>Buy Now</span>
+                  </button>
+                </div>
+
+                {/* Fast WhatsApp Help link */}
+                <div className="pt-1 flex items-center justify-center">
+                  <a
+                    href="https://wa.me/8801727877160"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-emerald-600 transition-colors"
+                  >
+                    <FaWhatsapp className="size-3.5 text-emerald-600" />
+                    <span>Have questions about this service? Chat on WhatsApp</span>
+                  </a>
+                </div>
               </div>
             </div>
 
-            {/* Trust & Guarantee Highlights */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-zinc-200 dark:border-zinc-800">
-              <div className="flex items-center gap-2.5 text-xs font-montserrat text-zinc-600 dark:text-zinc-400">
-                <Zap className="size-4 text-primary shrink-0" />
-                <span>Instant Delivery</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs font-montserrat text-zinc-600 dark:text-zinc-400">
-                <ShieldCheck className="size-4 text-primary shrink-0" />
-                <span>Verified & Secure</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-xs font-montserrat text-zinc-600 dark:text-zinc-400">
-                <Headphones className="size-4 text-primary shrink-0" />
-                <span>24/7 Dedicated Support</span>
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Detailed Description & Information Section */}
-        <div className="mt-12 sm:mt-16 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 md:p-10 shadow-xs">
-          <h2 className="font-montserrat font-bold text-xl sm:text-2xl text-zinc-900 dark:text-zinc-100 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-            Service Description & Information
+        {/* Description & Specifications Box */}
+        <div className="mt-5 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200/80 dark:border-zinc-800 p-5 sm:p-6 lg:p-7 shadow-xs">
+          <h2 className="font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-100 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+            Service Description & Details
           </h2>
 
-          <div className="mt-6 prose prose-zinc dark:prose-invert max-w-none text-sm sm:text-base leading-relaxed text-zinc-700 dark:text-zinc-300 font-montserrat whitespace-pre-line">
+          <div className="mt-4 prose prose-zinc dark:prose-invert max-w-none text-sm leading-relaxed text-zinc-700 dark:text-zinc-300 whitespace-pre-line">
             {description}
           </div>
 
           {/* Service Note (if present) */}
           {note && (
-            <div className="mt-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-amber-900 dark:text-amber-200">
-              <div className="flex items-center gap-2 font-bold font-montserrat text-sm mb-1">
-                <Info className="size-4 text-amber-600 dark:text-amber-400" />
+            <div className="mt-4 p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-amber-900 dark:text-amber-200 text-sm">
+              <div className="flex items-center gap-1.5 font-bold mb-1">
+                <Info className="size-4 text-amber-600" />
                 <span>Important Note:</span>
               </div>
-              <p className="text-xs sm:text-sm font-montserrat">{note}</p>
+              <p className="leading-relaxed">{note}</p>
             </div>
           )}
 
-          {/* Specifications Grid */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs text-zinc-400 font-montserrat block">Category</span>
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 font-montserrat mt-0.5 block">
+          {/* Specifications Pills */}
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs text-zinc-400 block font-medium">Category</span>
+              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5 block truncate">
                 {category?.name || "General"}
               </span>
             </div>
-            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs text-zinc-400 font-montserrat block">Account Type</span>
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 font-montserrat mt-0.5 block flex items-center gap-1.5">
-                <UserCheck className="size-3.5 text-primary" />
-                {selectedVariant?.accountType || "Standard"}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs text-zinc-400 block font-medium">Account Type</span>
+              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5 block flex items-center gap-1.5">
+                <UserCheck className="size-4 text-primary" />
+                <span className="truncate">
+                  {selectedVariant?.accountType || "Standard"}
+                </span>
               </span>
             </div>
-            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
-              <span className="text-xs text-zinc-400 font-montserrat block">Selected Validity</span>
-              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 font-montserrat mt-0.5 block flex items-center gap-1.5">
-                <Clock className="size-3.5 text-primary" />
-                {selectedVariant?.timeLine || "Standard"}
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs text-zinc-400 block font-medium">Selected Duration</span>
+              <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5 block flex items-center gap-1.5">
+                <Clock className="size-4 text-primary" />
+                <span className="truncate">
+                  {selectedVariant?.timeLine || "Standard"}
+                </span>
+              </span>
+            </div>
+            <div className="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+              <span className="text-xs text-zinc-400 block font-medium">Delivery Method</span>
+              <span className="text-sm font-semibold text-emerald-600 mt-0.5 block truncate">
+                Instant (WhatsApp / Email)
               </span>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
 }
-
