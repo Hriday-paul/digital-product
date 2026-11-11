@@ -23,7 +23,7 @@ import {
   Plus,
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { PaymentMethodType, PlaceOrderPayload } from "@/redux/types";
+import { PaymentMethod, PlaceOrderPayload } from "@/redux/types";
 import { RootState } from "@/redux/store";
 import {
   clearCart,
@@ -50,21 +50,21 @@ interface CheckoutFormData {
 
 const PAYMENT_METHODS = [
   {
-    id: "BKASH" as PaymentMethodType,
+    id: PaymentMethod.BKASH,
     name: "bKash",
     number: "01790079486",
     type: "Personal (Send Money)",
     image: bkashImg,
   },
   {
-    id: "NAGAD" as PaymentMethodType,
+    id: PaymentMethod.NAGAD,
     name: "Nagad",
     number: "01790079486",
     type: "Personal (Send Money)",
     image: nagadImg,
   },
   {
-    id: "ROCKET" as PaymentMethodType,
+    id: PaymentMethod.ROCKET,
     name: "Rocket",
     number: "01790079486",
     type: "Personal (Send Money)",
@@ -83,7 +83,7 @@ export default function CheckoutClient() {
   const cartItems = useSelector((state: RootState) => state.cartSlice.items);
 
   const [PlaceOrder, { isLoading: isSubmitting }] = usePlaceOrderMutation();
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethodType>("BKASH");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(PaymentMethod.BKASH);
   const [copied, setCopied] = useState(false);
 
   const {
@@ -134,7 +134,6 @@ export default function CheckoutClient() {
         paymentMethod: selectedMethod,
         accountNumber: data.accountNumber,
         transactionId: data.transactionId,
-        amount: totalFinalPrice,
       };
 
       await PlaceOrder(payload).unwrap();

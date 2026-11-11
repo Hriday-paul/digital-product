@@ -5,6 +5,7 @@ import { useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
 import SmNavSheet from "./SmNavsheet"
 import CartSheet from "./CartSheet"
+import NavbarSearch from "./NavbarSearch"
 import logo from "@/assets/logo.png"
 import Image from 'next/image'
 import { usePathname, useRouter } from "next/navigation"
@@ -70,6 +71,8 @@ function Navbar() {
                     </nav>
 
                     <div className="flex flex-row gap-x-2.5 sm:gap-x-3 items-center">
+                        <NavbarSearch />
+
                         <button
                             onClick={handleMoveWishlist}
                             aria-label="Wishlist"

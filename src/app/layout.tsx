@@ -7,6 +7,7 @@ import { ToastContainer } from "react-toastify";
 import NextJsTopLoader from "@/shared/NextJsTopLoader";
 import Navbar from "@/shared/Navbar/Navbar";
 import Footer from "@/shared/Footer/Footer";
+import FloatingChat from "@/shared/FloatingChat";
 
 
 const montserrat = Montserrat({
@@ -115,6 +116,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Footer />
+          <FloatingChat />
 
         </ReduxProvider>
 

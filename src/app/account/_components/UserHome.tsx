@@ -3,6 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useGetUserProfileQuery } from '@/redux/api/authApi';
 import ErrorComponent from '@/shared/ErrorComponent';
 import Image from 'next/image';
+import Signout from '../settings/_components/Signout';
 
 function UserHome() {
     const { isLoading: profileGetLoad, isSuccess: profileSuccess, isError, data: profileData } = useGetUserProfileQuery();
@@ -37,6 +38,10 @@ function UserHome() {
                     </svg>
                     Verified
                 </span>
+            </div>
+
+            <div className="mt-5">
+                <Signout />
             </div>
         </div>
     )

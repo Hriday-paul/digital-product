@@ -1,5 +1,5 @@
 export type IUser = {
-    id : number
+    id: number
     "email": string,
     phone: string,
     name: string,
@@ -26,10 +26,6 @@ export interface IMeta {
     "totalPage": number
 }
 
-export type OrderStatus = "PENDING" | "COMPLETED" | "CANCELLED" | string;
-export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | string;
-export type PaymentMethodType = "BKASH" | "NAGAD" | "ROCKET";
-
 export interface OrderServicePayloadItem {
     serviceId: string;
     varientId: string;
@@ -42,41 +38,69 @@ export interface PlaceOrderPayload {
     customerEmail: string;
     customerWhatsapp: string;
     customerNote?: string;
-    paymentMethod: PaymentMethodType;
+    paymentMethod: PaymentMethod;
     accountNumber: string;
     transactionId: string;
-    amount?: number;
 }
 
-export interface IOrderPayment {
-    id: string | number;
-    amount: number;
-    paymentMethod: string;
-    accountNumber: string;
-    transactionId: string;
-    status: PaymentStatus;
-    userId?: string;
-    createdAt?: string | Date;
-    lastActionAt?: string | Date;
+
+export enum OrderStatus {
+    PENDING = "PENDING",
+    COMPLETED = "COMPLETED",
+    CANCELED = "CANCELED",
+}
+
+export enum PaymentMethod {
+    BKASH = "BKASH",
+    NAGAD = "NAGAD",
+    ROCKET = "ROCKET",
+    CARD = "CARD",
+    CASH = "CASH",
 }
 
 export interface IOrder {
-    id: string | number;
+    id: string;
     userId: string;
-    serviceId: string | number;
-    variantId: string | number;
-    paymentId: string | number;
+
     customerName: string;
     customerEmail: string;
-    customerWhatsapp?: string;
-    customerNote?: string | null;
+    customerWhatsapp: string;
+    customerNote: string | null;
+
+    price: number;
+
+    couponCode: string | null;
+    couponDiscount: number;
+    couponApplied: boolean;
+
+    paymentMethod: PaymentMethod;
+    accountNumber: string | null;
+    transactionId: string;
+
     status: OrderStatus;
-    user: IUser;
-    service: IService;
-    variant: IServiceVariant;
-    payment: IOrderPayment;
-    createdAt: string | Date;
-    updatedAt: string | Date;
+
+    createdAt: Date;
+    updatedAt: Date;
+
+    items: OrderItem[];
+}
+
+export interface OrderItem {
+    id: string;
+    orderId: string;
+
+    serviceId: string;
+    variantId: string;
+
+    quantity: number;
+    unitPrice: number;
+    totalPrice: number;
+
+    service?: IService;
+    variant?: IServiceVariant;
+
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface INotification {
@@ -149,16 +173,16 @@ export interface IService {
 }
 
 enum VariantBadge {
-  BEST_VALUE = "BEST_VALUE",
-  MOST_POPULAR = "MOST_POPULAR",
-  BEST_SELLER = "BEST_SELLER",
-  BEST_DEAL = "BEST_DEAL",
-  PREMIUM = "PREMIUM",
-  RECOMMENDED = "RECOMMENDED",
-  NEW = "NEW",
-  LIMITED_STOCK = "LIMITED_STOCK",
-  TRENDING = "TRENDING",
-  EXCLUSIVE = "EXCLUSIVE",
-  SPECIAL_OFFER = "SPECIAL_OFFER",
-  TOP_PICK = "TOP_PICK"
+    BEST_VALUE = "BEST_VALUE",
+    MOST_POPULAR = "MOST_POPULAR",
+    BEST_SELLER = "BEST_SELLER",
+    BEST_DEAL = "BEST_DEAL",
+    PREMIUM = "PREMIUM",
+    RECOMMENDED = "RECOMMENDED",
+    NEW = "NEW",
+    LIMITED_STOCK = "LIMITED_STOCK",
+    TRENDING = "TRENDING",
+    EXCLUSIVE = "EXCLUSIVE",
+    SPECIAL_OFFER = "SPECIAL_OFFER",
+    TOP_PICK = "TOP_PICK"
 }
