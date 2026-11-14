@@ -17,7 +17,7 @@ const CHAT_OPTIONS = [
   {
     id: "messenger",
     label: "Messenger",
-    href: "https://m.me/asifzonebd",
+    href: "https://www.facebook.com/asifzone486",
     icon: FaFacebookMessenger,
     bgClass: "bg-[#0084FF] hover:bg-[#0073e6] shadow-[#0084FF]/30",
     external: true,
