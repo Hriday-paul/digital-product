@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 
 import { Loader2, Mail, Phone } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter, FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useCreateSupportMutation } from "@/redux/api/Support.api";
 
 interface ContactFormData {
   name: string;
@@ -17,7 +18,7 @@ interface ContactFormData {
 }
 
 export default function ContactSection() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createSupport, { isLoading: isSubmitting }] = useCreateSupportMutation();
 
   const {
     register,
@@ -29,17 +30,23 @@ export default function ContactSection() {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    setIsSubmitting(true);
     try {
-      // Simulate form submission delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Contact Form Submitted:", data);
-      toast.success("Thank you! Your message has been sent successfully.");
+      const res = await createSupport({
+        name: data.name.trim(),
+        phone: data.phone.trim(),
+        email: data.email?.trim() || undefined,
+        subject: data.subject.trim(),
+        details: data.message?.trim() || undefined,
+      }).unwrap();
+      toast.success(res?.message || "Thank you! Your message has been sent successfully.");
       reset();
-    } catch {
-      toast.error("Failed to send message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+    } catch (err: any) {
+      const fieldErrors = err?.data?.errors;
+      const firstFieldError =
+        fieldErrors && typeof fieldErrors === "object"
+          ? (Object.values(fieldErrors)[0] as string[] | undefined)?.[0]
+          : undefined;
+      toast.error(firstFieldError || err?.data?.message || "Failed to send message. Please try again.");
     }
   };
 
@@ -116,10 +123,11 @@ export default function ContactSection() {
 
             <div className="flex items-center gap-3 mt-5 sm:mt-8">
               <Link
-                href="https://facebook.com"
+                href="https://www.facebook.com/share/1Dzs1FMhbr/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Facebook"
+                aria-label="ASIF Zone BD on Facebook"
+                title="ASIF Zone BD"
                 className="size-10 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-white flex items-center justify-center transition-all duration-200"
               >
                 <FaFacebookF size={15} />

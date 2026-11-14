@@ -22,7 +22,8 @@ export default function Footer() {
                 alt="AsifZoneBd"
                 className="h-10 sm:h-12 lg:h-16 w-auto object-contain brightness-110"
               />
-              <p className="text-lg sm:text-xl font-bold">AsifZoneBd</p>
+              
+              {/* <p className="text-lg sm:text-xl font-bold">AsifZoneBd</p> */}
             </Link>
 
             <p className="mt-3 text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed max-w-xs">
@@ -32,10 +33,11 @@ export default function Footer() {
             {/* Social Icons */}
             <div className="mt-5 flex items-center gap-3">
               <Link
-                href="https://facebook.com"
+                href="https://www.facebook.com/share/1Dzs1FMhbr/?mibextid=wwXIfr"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Facebook"
+                aria-label="ASIF Zone BD on Facebook"
+                title="ASIF Zone BD"
                 className="size-8 rounded-full bg-white/10 hover:bg-primary text-zinc-300 hover:text-white flex items-center justify-center transition-all duration-200"
               >
                 <FaFacebookF size={13} />
